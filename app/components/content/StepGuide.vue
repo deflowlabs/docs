@@ -3,18 +3,15 @@
  * StepGuide: MDC component for numbered procedural steps.
  * Usage in markdown:
  *   ::step-guide
- *     :::step{title="Connect your wallet"}
+ *     :::step{title="Connect your wallet" n="1"}
  *     Visit the platform and click Connect Wallet.
- *     :::
- *     :::step{title="Complete verification"}
- *     Follow the KYC prompts.
  *     :::
  *   ::
  */
 </script>
 
 <template>
-  <div class="step-guide">
+  <div class="relative pl-8 my-8 border-l border-default">
     <slot />
   </div>
 </template>

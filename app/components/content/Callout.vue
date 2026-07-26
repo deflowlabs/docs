@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
  * Callout: MDC component for highlighted information blocks.
+ * Maps to Nuxt UI's UAlert component for native styling.
  * Usage in markdown:
  *   ::callout{type="tip"}
  *   Your tip content here.
@@ -12,19 +13,38 @@ const props = withDefaults(defineProps<{
   type: 'note',
 })
 
+const colorMap: Record<string, string> = {
+  note: 'info',
+  tip: 'success',
+  warning: 'warning',
+  danger: 'error',
+}
+
 const iconMap: Record<string, string> = {
-  note: 'lucide:info',
-  tip: 'lucide:lightbulb',
-  warning: 'lucide:triangle-alert',
-  danger: 'lucide:shield-alert',
+  note: 'i-lucide-info',
+  tip: 'i-lucide-lightbulb',
+  warning: 'i-lucide-triangle-alert',
+  danger: 'i-lucide-shield-alert',
+}
+
+const titleMap: Record<string, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  warning: 'Warning',
+  danger: 'Danger',
 }
 </script>
 
 <template>
-  <div :class="`callout callout--${props.type}`" role="alert">
-    <Icon :name="iconMap[props.type]" size="18" class="callout__icon" />
-    <div class="callout__content">
+  <UAlert
+    :color="colorMap[props.type] as any"
+    :icon="iconMap[props.type]"
+    :title="titleMap[props.type]"
+    variant="subtle"
+    class="my-6"
+  >
+    <template #description>
       <slot />
-    </div>
-  </div>
+    </template>
+  </UAlert>
 </template>

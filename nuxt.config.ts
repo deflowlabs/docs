@@ -1,10 +1,7 @@
 /**
  * DeFlow Labs Documentation Site
- * Nuxt 4 + Nuxt Content v3 + Nuxt Studio
- * Dark "Atmospheric Institutional" design system.
+ * Nuxt 4 + Nuxt Content v3 + Nuxt UI v4 + Nuxt Studio
  */
-import tailwindcss from '@tailwindcss/vite'
-
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
@@ -25,7 +22,6 @@ export default defineNuxtConfig({
           name: 'description',
           content: 'Official documentation for the DeFlow settlement platform. Guides, tutorials, and reference material for institutional digital asset dealflows.',
         },
-        { name: 'theme-color', content: '#0B0B14' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'DeFlow Docs' },
         { property: 'og:title', content: 'DeFlow Documentation' },
@@ -33,8 +29,7 @@ export default defineNuxtConfig({
           property: 'og:description',
           content: 'Official documentation for the DeFlow settlement platform.',
         },
-        { property: 'og:image', content: 'https://docs.deflowlabs.io/og-image.png' },
-        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:card', content: 'summary' },
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -42,20 +37,24 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['~/assets/css/main.css'],
-
   modules: [
+    '@nuxt/ui',
     '@nuxt/content',
     'nuxt-studio',
-    '@nuxt/icon',
     '@nuxt/image',
-    '@nuxt/fonts',
     '@nuxtjs/sitemap',
   ],
 
+  css: ['~/assets/css/main.css'],
+
+  // Nuxt UI — dark mode as default, system detection enabled
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+  },
+
   // Nuxt Studio — visual content editor (self-hosted)
   studio: {
-    enabled: true,
     repository: {
       provider: 'github',
       owner: 'DeFlowLabs',
@@ -64,7 +63,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // Site URL for sitemap and SEO modules
+  // Site URL for sitemap and SEO
   site: {
     url: 'https://docs.deflowlabs.io',
   },
@@ -74,20 +73,14 @@ export default defineNuxtConfig({
     build: {
       markdown: {
         highlight: {
-          theme: 'vitesse-dark',
+          theme: {
+            default: 'vitesse-light',
+            dark: 'vitesse-dark',
+          },
           langs: [
-            'typescript',
-            'javascript',
-            'json',
-            'bash',
-            'solidity',
-            'sql',
-            'yaml',
-            'markdown',
-            'vue',
-            'css',
-            'html',
-            'mermaid',
+            'typescript', 'javascript', 'json', 'bash',
+            'solidity', 'sql', 'yaml', 'markdown',
+            'vue', 'css', 'html', 'mermaid',
           ],
         },
         toc: {
@@ -107,34 +100,15 @@ export default defineNuxtConfig({
     collections: ['lucide'],
   },
 
-  // Font configuration — Geist (primary) + Geist Mono (code)
-  fonts: {
-    families: [
-      { name: 'Geist', provider: 'google', weights: [400, 500, 600, 700] },
-      { name: 'Geist Mono', provider: 'google', weights: [400, 500, 600] },
-    ],
-  },
 
-  // Sitemap
-  sitemap: {
-    siteUrl: 'https://docs.deflowlabs.io',
-  },
 
-  // ISR route rules for Vercel
+  // Route rules — ISR for all routes
   routeRules: {
     '/**': { isr: 3600 },
-  },
-
-  // Vite configuration — Tailwind v4 plugin
-  vite: {
-    plugins: [
-      tailwindcss(),
-    ],
   },
 
   // Nitro server configuration
   nitro: {
     preset: 'vercel',
   },
-
 })

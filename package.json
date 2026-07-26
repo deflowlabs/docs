@@ -11,11 +11,9 @@
   },
   "dependencies": {
     "@nuxt/content": "^3.15.0",
-    "@nuxt/fonts": "^0.14.0",
-    "@nuxt/icon": "^2.3.1",
     "@nuxt/image": "^2.0.0",
+    "@nuxt/ui": "^4.10.0",
     "@nuxtjs/sitemap": "^8.3.0",
-    "@tailwindcss/vite": "^4.3.3",
     "better-sqlite3": "^12.11.1",
     "nuxt": "^4.5.0",
     "nuxt-studio": "^1.7.0",

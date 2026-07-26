@@ -6,10 +6,10 @@ Official documentation for the DeFlow settlement platform.
 
 - **Framework:** Nuxt 4 (Vue 3)
 - **Content:** Nuxt Content v3 (Markdown in Git)
+- **UI:** Nuxt UI v4 (dark/light mode, search, navigation)
 - **Editor:** Nuxt Studio (visual content editing)
 - **Styling:** Tailwind CSS v4
-- **Fonts:** Geist + Geist Mono via `@nuxt/fonts`
-- **Deployment:** Vercel (ISR)
+- **Deployment:** Vercel (ISR, 1h cache)
 
 ## Getting Started
 
@@ -39,28 +39,49 @@ content/
 └── 6.support/                   # FAQ, glossary
 ```
 
-## Adding Content
+## MDC Components
 
-1. Create a new `.md` file in the appropriate `content/` subdirectory
-2. Add frontmatter with `title` and `description`
-3. Write content using standard Markdown
-4. Use MDC components for callouts and step guides:
+Three custom MDC components are available for use in Markdown:
+
+### Callout (renders as UAlert)
 
 ```md
 ::callout{type="tip"}
 Your content here.
 ::
+```
 
+Types: `note`, `tip`, `warning`, `danger`
+
+### Step Guide (numbered procedure)
+
+```md
 ::step-guide
 :::step{title="Step Title" n="1"}
 Step content.
 :::
+:::step{title="Next Step" n="2"}
+More content.
+:::
 ::
 ```
 
+### Mermaid Diagrams
+
+Use fenced code blocks with `mermaid` language:
+
+````md
+```mermaid
+flowchart LR
+  A --> B --> C
+```
+````
+
 ## Nuxt Studio
 
-In development, a floating button appears to open the visual editor. For production, configure the `studio` section in `nuxt.config.ts` with your GitHub repository details.
+In development, a floating button appears to open the visual editor.
+For production, configure the `studio` section in `nuxt.config.ts`
+with your GitHub repository details.
 
 ## License
 
