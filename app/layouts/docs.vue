@@ -1,23 +1,89 @@
 <script setup lang="ts">
 /**
- * Docs layout using Nuxt UI v4 components.
- * Provides header with search, sidebar navigation,
- * color mode toggle, and footer.
+ * Docs layout with 3-section header navigation.
+ * Sidebar filters to show only the active section's navigation.
+ * Sections: Getting Started, User Guide, Developer Docs.
  */
+const route = useRoute()
+
 const { data: navigation } = await useAsyncData(
   'docs-navigation',
   () => queryCollectionNavigation('content'),
 )
+
+/**
+ * Determines the active documentation section from the route path.
+ * Returns the section key used for header highlighting and sidebar filtering.
+ */
+const activeSection = computed(() => {
+  const path = route.path
+  if (path.startsWith('/getting-started')) return 'getting-started'
+  if (path.startsWith('/user-guide')) return 'user-guide'
+  if (path.startsWith('/developer-docs')) return 'developer-docs'
+  return ''
+})
+
+/**
+ * Header navigation items for the 3 documentation sections.
+ * Developer Docs shows a "Coming Soon" badge.
+ */
+const sections = [
+  { label: 'Getting Started', to: '/getting-started/what-is-deflow', key: 'getting-started' },
+  { label: 'User Guide', to: '/user-guide/trading/otc-deal-lifecycle', key: 'user-guide' },
+  { label: 'Developer Docs', to: '/developer-docs', key: 'developer-docs', badge: 'Soon' },
+]
+
+/**
+ * Filters navigation tree to only show children of the active section.
+ * Falls back to full navigation if no section match is found.
+ */
+const filteredNavigation = computed(() => {
+  if (!navigation.value) return []
+  const sectionMap: Record<string, string> = {
+    'getting-started': 'Getting Started',
+    'user-guide': 'User Guide',
+    'developer-docs': 'Developer Documentation',
+  }
+  const sectionTitle = sectionMap[activeSection.value]
+  if (!sectionTitle) return navigation.value
+
+  const section = navigation.value.find(
+    (item: any) => item.title === sectionTitle,
+  )
+  return section?.children || []
+})
 </script>
 
 <template>
-  <UHeader title="DeFlow" to="/">
-    <template #left>
-      <span class="text-sm font-medium text-muted ml-2">Docs</span>
+  <UHeader title="DeFlow Docs" to="/">
+    <template #center>
+      <nav class="hidden md:flex items-center gap-1">
+        <NuxtLink
+          v-for="section in sections"
+          :key="section.key"
+          :to="section.to"
+          class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
+          :class="[
+            activeSection === section.key
+              ? 'text-primary bg-primary/10'
+              : 'text-muted hover:text-default hover:bg-default/5',
+          ]"
+        >
+          {{ section.label }}
+          <UBadge
+            v-if="section.badge"
+            :label="section.badge"
+            size="xs"
+            color="neutral"
+            variant="subtle"
+            class="ml-1.5"
+          />
+        </NuxtLink>
+      </nav>
     </template>
 
     <template #right>
-      <UContentSearchButton />
+      <UContentSearchButton label="Search..." />
       <UColorModeButton />
       <UButton
         icon="i-lucide-globe"
@@ -42,7 +108,9 @@ const { data: navigation } = await useAsyncData(
     <UPage>
       <template #left>
         <UPageAside>
-          <UContentNavigation :navigation="navigation" />
+          <UContentNavigation
+            :navigation="filteredNavigation"
+          />
         </UPageAside>
       </template>
 

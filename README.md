@@ -26,17 +26,37 @@ npm run build
 
 ## Content Structure
 
-All documentation content is stored as Markdown files in the `content/` directory:
+Documentation is organized into 3 main sections accessible via header navigation:
 
 ```
 content/
-├── index.md                     # Home page
-├── 1.getting-started/           # Account setup, verification, walkthrough
-├── 2.trading/                   # Deal lifecycle, escrow, settlement
-├── 3.rewards/                   # VIP tiers, referrals, ranks
-├── 4.security/                  # Zero-PII, smart contract security
-├── 5.partners/                  # Partner program, contact
-└── 6.support/                   # FAQ, glossary
+├── 0.index.md                              # Welcome page (hidden from sidebar)
+├── 1.getting-started/                      # Section 1: Getting Started
+│   ├── 1.what-is-deflow.md
+│   ├── 2.creating-your-account.md
+│   ├── 3.identity-verification.md
+│   └── 4.platform-walkthrough.md
+├── 2.user-guide/                           # Section 2: User Guide
+│   ├── 1.trading/
+│   │   ├── 1.otc-deal-lifecycle.md
+│   │   ├── 2.creating-a-deal.md
+│   │   ├── 3.escrow-and-funding.md
+│   │   └── 4.settlement.md
+│   ├── 2.rewards/
+│   │   ├── 1.vip-tiers.md
+│   │   ├── 2.referral-program.md
+│   │   └── 3.ranks-system.md
+│   ├── 3.security/
+│   │   ├── 1.zero-pii-policy.md
+│   │   └── 2.smart-contract-security.md
+│   ├── 4.partners/
+│   │   ├── 1.partner-program.md
+│   │   └── 2.contact.md
+│   └── 5.support/
+│       ├── 1.faq.md
+│       └── 2.glossary.md
+└── 3.developer-docs/                      # Section 3: Developer Docs (Coming Soon)
+    └── index.md
 ```
 
 ## MDC Components
@@ -60,15 +80,10 @@ Types: `note`, `tip`, `warning`, `danger`
 :::step{title="Step Title" n="1"}
 Step content.
 :::
-:::step{title="Next Step" n="2"}
-More content.
-:::
 ::
 ```
 
 ### Mermaid Diagrams
-
-Use fenced code blocks with `mermaid` language:
 
 ````md
 ```mermaid
