@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * Docs layout: custom header with section tabs,
- * filtered sidebar, proper search with content indexing, and color mode.
+ * filtered sidebar (no section headings), Welcome link,
+ * search with content indexing, and color mode.
  */
 const route = useRoute()
 
@@ -12,8 +13,6 @@ const { data: navigation } = await useAsyncData(
 
 /**
  * Fetch all content search sections for the search modal.
- * queryCollectionSearchSections returns flattened sections
- * that UContentSearch uses for its file-based search index.
  */
 const { data: files } = await useAsyncData(
   'docs-search-sections',
@@ -21,22 +20,39 @@ const { data: files } = await useAsyncData(
   { default: () => [] },
 )
 
+/**
+ * Determines the active documentation section from the route path.
+ * Root path (/) returns 'welcome' for the Welcome link highlight.
+ */
 const activeSection = computed(() => {
   const path = route.path
+  if (path === '/' || path === '') return 'welcome'
   if (path.startsWith('/getting-started')) return 'getting-started'
   if (path.startsWith('/user-guide')) return 'user-guide'
   if (path.startsWith('/developer-docs')) return 'developer-docs'
   return 'getting-started'
 })
 
+/**
+ * Whether the Welcome link in the sidebar should be highlighted.
+ */
+const isWelcomePage = computed(() => route.path === '/' || route.path === '')
+
+/**
+ * 3 documentation section tabs displayed in the header.
+ */
 const sections = [
   { label: 'Getting Started', to: '/getting-started/what-is-deflow', key: 'getting-started', icon: 'i-lucide-rocket' },
   { label: 'User Guide', to: '/user-guide/trading/otc-deal-lifecycle', key: 'user-guide', icon: 'i-lucide-book-open' },
-  { label: 'Developer Docs', to: '/developer-docs', key: 'developer-docs', icon: 'i-lucide-code', badge: 'Soon', disabled: true },
+  { label: 'Developer Guide', to: '/developer-docs', key: 'developer-docs', icon: 'i-lucide-code', badge: 'Soon', disabled: true },
 ]
 
+/**
+ * Filters navigation to only the active section's CHILDREN
+ * (no section heading). Returns empty on welcome page.
+ */
 const filteredNavigation = computed(() => {
-  if (!navigation.value) return []
+  if (!navigation.value || activeSection.value === 'welcome') return []
   const pathMap: Record<string, string> = {
     'getting-started': '/getting-started',
     'user-guide': '/user-guide',
@@ -45,7 +61,8 @@ const filteredNavigation = computed(() => {
   const prefix = pathMap[activeSection.value]
   if (!prefix) return []
   const section = navigation.value.find((item: any) => item.path === prefix)
-  return section ? [section] : []
+  // Return only children — no section title heading
+  return section?.children || []
 })
 </script>
 
@@ -106,6 +123,21 @@ const filteredNavigation = computed(() => {
     <UPage>
       <template #left>
         <UPageAside>
+          <!-- Welcome link — always visible, highlighted on root -->
+          <NuxtLink
+            to="/"
+            class="flex items-center gap-2 px-3 py-2 mb-3 text-sm font-medium rounded-md transition-colors"
+            :class="[
+              isWelcomePage
+                ? 'text-primary bg-primary/10'
+                : 'text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)]',
+            ]"
+          >
+            <UIcon name="i-lucide-home" class="size-4" />
+            Welcome to DeFlow
+          </NuxtLink>
+
+          <!-- Section child pages (no section heading) -->
           <UContentNavigation :navigation="filteredNavigation" />
         </UPageAside>
       </template>
@@ -127,7 +159,6 @@ const filteredNavigation = computed(() => {
     </div>
   </footer>
 
-  <!-- Pass navigation tree + search sections (files) for full content search -->
   <UContentSearch
     :navigation="navigation"
     :files="files"
