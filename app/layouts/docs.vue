@@ -72,7 +72,7 @@ const showWelcomeLink = computed(() => activeSection.value === 'getting-started'
         </NuxtLink>
 
         <!-- Section tabs -->
-        <nav class="hidden md:flex items-center gap-1 flex-1 ml-4">
+        <nav class="hidden md:flex items-center gap-1 ml-4">
           <template v-for="section in sections" :key="section.key">
             <span
               v-if="section.disabled"
@@ -104,9 +104,22 @@ const showWelcomeLink = computed(() => activeSection.value === 'getting-started'
           </template>
         </nav>
 
-        <!-- Right: Search + Color mode -->
-        <div class="flex items-center gap-2 shrink-0">
-          <UContentSearchButton label="Search..." />
+        <!-- Spacer -->
+        <div class="flex-1" />
+
+        <!-- Inline search bar (full-width style like Nuxt docs template) -->
+        <UContentSearchButton :collapsed="false" class="w-48 lg:w-64" />
+
+        <!-- Right: GitHub + Color mode -->
+        <div class="flex items-center gap-1 shrink-0">
+          <UButton
+            icon="i-lucide-github"
+            color="neutral"
+            variant="ghost"
+            to="https://github.com/DeFlowLabs"
+            target="_blank"
+            aria-label="GitHub"
+          />
           <UColorModeButton />
         </div>
       </div>

@@ -139,22 +139,22 @@ const transformStyle = computed(() => ({
   <div class="mermaid-wrapper my-6 relative group">
     <div class="rounded-lg bg-[#0f172a] border border-[var(--ui-border)] overflow-hidden">
       <!-- Toolbar -->
-      <div class="flex items-center justify-between px-3 py-1.5 border-b border-[var(--ui-border)] bg-[#0f172a]/80">
-        <span class="text-xs text-[var(--ui-text-muted)] font-medium">Diagram</span>
+      <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/10 bg-[#1e293b]">
+        <span class="text-xs text-slate-400 font-medium">Diagram</span>
         <div class="flex items-center gap-1">
           <button
-            class="p-1 rounded hover:bg-[var(--ui-bg-elevated)] text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] transition-colors"
+            class="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             title="Reset view"
             @click="resetView"
           >
-            <UIcon name="i-lucide-maximize-2" class="size-3.5" />
+            <UIcon name="i-lucide-maximize-2" class="size-4" />
           </button>
           <button
-            class="p-1 rounded hover:bg-[var(--ui-bg-elevated)] text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] transition-colors"
+            class="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             title="Fullscreen (Esc to close)"
             @click="toggleFullscreen"
           >
-            <UIcon name="i-lucide-expand" class="size-3.5" />
+            <UIcon name="i-lucide-expand" class="size-4" />
           </button>
         </div>
       </div>
