@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
  * Docs layout: custom header with section tabs,
- * filtered sidebar (no section headings), Welcome link,
- * search with content indexing, and color mode.
+ * filtered sidebar, search with content indexing, and color mode.
  */
 const route = useRoute()
 
@@ -31,14 +30,8 @@ const activeSection = computed(() => {
   return 'getting-started'
 })
 
-/**
- * Whether the Welcome link in the sidebar should be highlighted.
- */
 const isWelcomePage = computed(() => route.path === '/' || route.path === '')
 
-/**
- * 3 documentation section tabs displayed in the header.
- */
 const sections = [
   { label: 'Getting Started', to: '/getting-started/what-is-deflow', key: 'getting-started', icon: 'i-lucide-rocket' },
   { label: 'User Guide', to: '/user-guide/trading/otc-deal-lifecycle', key: 'user-guide', icon: 'i-lucide-book-open' },
@@ -46,8 +39,7 @@ const sections = [
 ]
 
 /**
- * Filters navigation to only the active section's CHILDREN
- * (no section heading).
+ * Filters navigation to only the active section's CHILDREN (no heading).
  */
 const filteredNavigation = computed(() => {
   if (!navigation.value) return []
@@ -59,9 +51,13 @@ const filteredNavigation = computed(() => {
   const prefix = pathMap[activeSection.value]
   if (!prefix) return []
   const section = navigation.value.find((item: any) => item.path === prefix)
-  // Return only children — no section title heading
   return section?.children || []
 })
+
+/**
+ * Show Welcome link only in Getting Started section.
+ */
+const showWelcomeLink = computed(() => activeSection.value === 'getting-started')
 </script>
 
 <template>
@@ -121,22 +117,26 @@ const filteredNavigation = computed(() => {
     <UPage>
       <template #left>
         <UPageAside>
-          <!-- Welcome link — always visible, highlighted on root -->
+          <!-- Welcome link — only in Getting Started section -->
           <NuxtLink
+            v-if="showWelcomeLink"
             to="/"
-            class="flex items-center gap-2 px-3 py-2 mb-3 text-sm font-medium rounded-md transition-colors"
+            class="flex items-center gap-2 px-2.5 py-1.5 text-sm rounded-md transition-colors"
             :class="[
               isWelcomePage
-                ? 'text-primary bg-primary/10'
+                ? 'text-primary font-medium'
                 : 'text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)]',
             ]"
           >
-            <UIcon name="i-lucide-home" class="size-4" />
             Welcome to DeFlow
           </NuxtLink>
 
-          <!-- Section child pages (expanded by default, no section heading) -->
-          <UContentNavigation :navigation="filteredNavigation" :default-open="true" />
+          <!-- Section child pages (expanded by default via CSS + defaultOpen) -->
+          <UContentNavigation
+            :navigation="filteredNavigation"
+            :default-open="true"
+            highlight
+          />
         </UPageAside>
       </template>
 

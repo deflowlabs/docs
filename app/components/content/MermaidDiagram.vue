@@ -4,74 +4,81 @@
  * Renders mermaid source as SVG with DeFlow dark theme.
  * Includes fullscreen toggle and mouse wheel zoom for large diagrams.
  */
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted, computed, nextTick } from 'vue'
 
 const props = defineProps<{
   code: string
 }>()
 
-const container = ref<HTMLDivElement>()
 const svgContent = ref('')
-const diagramId = `mermaid-${Math.random().toString(36).substring(2, 9)}`
 const isFullscreen = ref(false)
 const scale = ref(1)
 const translateX = ref(0)
 const translateY = ref(0)
+const renderError = ref('')
 let isDragging = false
 let dragStartX = 0
 let dragStartY = 0
 let startTranslateX = 0
 let startTranslateY = 0
+let renderCount = 0
 
 /**
  * Renders the Mermaid diagram with DeFlow-branded dark theme.
+ * Uses a unique ID per render call to avoid mermaid ID collisions.
  */
 async function renderDiagram() {
-  if (!props.code || !container.value) return
+  if (!props.code) {
+    renderError.value = 'No diagram code provided'
+    return
+  }
 
-  const { default: mermaid } = await import('mermaid')
-
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'dark',
-    darkMode: true,
-    fontFamily: 'Inter, system-ui, sans-serif',
-    themeVariables: {
-      primaryColor: '#0ea5e9',
-      primaryTextColor: '#e2e8f0',
-      primaryBorderColor: '#334155',
-      secondaryColor: '#1e293b',
-      secondaryTextColor: '#cbd5e1',
-      tertiaryColor: '#0f172a',
-      lineColor: '#475569',
-      textColor: '#e2e8f0',
-      mainBkg: '#1e293b',
-      nodeBorder: '#334155',
-      clusterBkg: '#0f172a',
-      clusterBorder: '#334155',
-      titleColor: '#e2e8f0',
-      edgeLabelBackground: '#1e293b',
-      nodeTextColor: '#e2e8f0',
-    },
-  })
+  renderCount++
+  const id = `mermaid-${Date.now()}-${renderCount}`
 
   try {
-    const { svg } = await mermaid.render(diagramId, props.code)
+    const { default: mermaid } = await import('mermaid')
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      darkMode: true,
+      fontFamily: 'Inter, system-ui, sans-serif',
+      themeVariables: {
+        primaryColor: '#0ea5e9',
+        primaryTextColor: '#e2e8f0',
+        primaryBorderColor: '#334155',
+        secondaryColor: '#1e293b',
+        secondaryTextColor: '#cbd5e1',
+        tertiaryColor: '#0f172a',
+        lineColor: '#475569',
+        textColor: '#e2e8f0',
+        mainBkg: '#1e293b',
+        nodeBorder: '#334155',
+        clusterBkg: '#0f172a',
+        clusterBorder: '#334155',
+        titleColor: '#e2e8f0',
+        edgeLabelBackground: '#1e293b',
+        nodeTextColor: '#e2e8f0',
+      },
+    })
+
+    const { svg } = await mermaid.render(id, props.code)
     svgContent.value = svg
-  } catch (e) {
+    renderError.value = ''
+  } catch (e: any) {
     console.warn('[MermaidDiagram] Render failed:', e)
+    renderError.value = e?.message || 'Failed to render diagram'
     svgContent.value = ''
   }
 }
 
-/** Zoom with mouse wheel */
 function handleWheel(e: WheelEvent) {
   e.preventDefault()
   const delta = e.deltaY > 0 ? -0.1 : 0.1
   scale.value = Math.max(0.3, Math.min(3, scale.value + delta))
 }
 
-/** Pan with mouse drag */
 function handleMouseDown(e: MouseEvent) {
   isDragging = true
   dragStartX = e.clientX
@@ -90,25 +97,21 @@ function handleMouseUp() {
   isDragging = false
 }
 
-/** Toggle fullscreen overlay */
 function toggleFullscreen() {
   isFullscreen.value = !isFullscreen.value
   if (isFullscreen.value) {
-    // Reset transform when entering fullscreen
     scale.value = 1
     translateX.value = 0
     translateY.value = 0
   }
 }
 
-/** Reset zoom/pan */
 function resetView() {
   scale.value = 1
   translateX.value = 0
   translateY.value = 0
 }
 
-/** Close fullscreen on Escape */
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape' && isFullscreen.value) {
     isFullscreen.value = false
@@ -116,15 +119,15 @@ function handleKeydown(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-  renderDiagram()
   document.addEventListener('keydown', handleKeydown)
+  nextTick(() => renderDiagram())
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
 })
 
-watch(() => props.code, renderDiagram)
+watch(() => props.code, () => nextTick(() => renderDiagram()))
 
 const transformStyle = computed(() => ({
   transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${scale.value})`,
@@ -133,7 +136,6 @@ const transformStyle = computed(() => ({
 </script>
 
 <template>
-  <!-- Inline diagram with expand button -->
   <div class="mermaid-wrapper my-6 relative group">
     <div class="rounded-lg bg-[#0f172a] border border-[var(--ui-border)] overflow-hidden">
       <!-- Toolbar -->
@@ -157,7 +159,7 @@ const transformStyle = computed(() => ({
         </div>
       </div>
 
-      <!-- Diagram content (inline) -->
+      <!-- Diagram content -->
       <div
         class="p-4 overflow-auto max-h-[500px] flex justify-center"
         @wheel.prevent="handleWheel"
@@ -167,23 +169,21 @@ const transformStyle = computed(() => ({
         @mouseleave="handleMouseUp"
       >
         <div v-if="svgContent" :style="transformStyle" class="transition-transform duration-100 origin-center" v-html="svgContent" />
-        <div v-else class="text-[var(--ui-text-muted)] text-sm py-8">Loading diagram...</div>
+        <div v-else-if="renderError" class="text-red-400/70 text-sm py-8">{{ renderError }}</div>
+        <div v-else class="text-[var(--ui-text-muted)] text-sm py-8 animate-pulse">Rendering diagram...</div>
       </div>
 
-      <!-- Zoom hint -->
-      <div class="px-3 py-1 text-[10px] text-[var(--ui-text-muted)] text-center border-t border-[var(--ui-border)]">
+      <!-- Zoom hint (only show when diagram loaded) -->
+      <div v-if="svgContent" class="px-3 py-1 text-[10px] text-[var(--ui-text-muted)] text-center border-t border-[var(--ui-border)]">
         Scroll to zoom · Drag to pan · Click expand for fullscreen
       </div>
     </div>
-  </div>
 
-  <!-- Fullscreen overlay -->
-  <Teleport to="body">
+    <!-- Fullscreen overlay (inline, no Teleport to avoid fragment root) -->
     <div
       v-if="isFullscreen"
       class="fixed inset-0 z-[100] bg-[#0a0a0f]/95 backdrop-blur-sm flex flex-col"
     >
-      <!-- Fullscreen toolbar -->
       <div class="flex items-center justify-between px-6 py-3 border-b border-[var(--ui-border)]">
         <span class="text-sm font-medium text-[var(--ui-text)]">Diagram — Fullscreen</span>
         <div class="flex items-center gap-2">
@@ -202,7 +202,6 @@ const transformStyle = computed(() => ({
         </div>
       </div>
 
-      <!-- Fullscreen diagram -->
       <div
         class="flex-1 overflow-hidden flex items-center justify-center"
         @wheel.prevent="handleWheel"
@@ -218,7 +217,7 @@ const transformStyle = computed(() => ({
         Scroll to zoom · Drag to pan · {{ Math.round(scale * 100) }}%
       </div>
     </div>
-  </Teleport>
+  </div>
 </template>
 
 <style>

@@ -102,11 +102,10 @@ export default defineNuxtConfig({
 
 
 
-  // Route rules — prerender root, ISR for all content pages
+  // Route rules — prerender all content pages for Vercel
   routeRules: {
-    '/': { prerender: true },
     '/api/**': { isr: false },
-    '/**': { isr: 3600 },
+    '/**': { prerender: true },
   },
 
   // Nitro server configuration
