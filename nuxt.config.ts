@@ -47,9 +47,9 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  // Nuxt UI — dark mode as default, system detection enabled
+  // Nuxt UI — system color mode by default
   colorMode: {
-    preference: 'dark',
+    preference: 'system',
     fallback: 'dark',
   },
 

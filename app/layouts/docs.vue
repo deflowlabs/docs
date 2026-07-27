@@ -1,9 +1,11 @@
 <script setup lang="ts">
 /**
  * Docs layout with section tabs in the header row,
- * filtered sidebar, and inline search bar.
+ * filtered sidebar, inline search bar, and color mode dropdown.
  */
 const route = useRoute()
+const colorMode = useColorMode()
+const searchOpen = ref(false)
 
 const { data: navigation } = await useAsyncData(
   'docs-navigation',
@@ -31,6 +33,36 @@ const sections = [
 ]
 
 /**
+ * Color mode dropdown items.
+ */
+const colorModeItems = [[
+  {
+    label: 'System',
+    icon: 'i-lucide-monitor',
+    click: () => { colorMode.preference = 'system' },
+  },
+  {
+    label: 'Light',
+    icon: 'i-lucide-sun',
+    click: () => { colorMode.preference = 'light' },
+  },
+  {
+    label: 'Dark',
+    icon: 'i-lucide-moon',
+    click: () => { colorMode.preference = 'dark' },
+  },
+]]
+
+/**
+ * Icon for the current color mode state.
+ */
+const colorModeIcon = computed(() => {
+  if (colorMode.preference === 'system') return 'i-lucide-monitor'
+  if (colorMode.preference === 'light') return 'i-lucide-sun'
+  return 'i-lucide-moon'
+})
+
+/**
  * Filters navigation to the active section (with title heading).
  */
 const filteredNavigation = computed(() => {
@@ -51,10 +83,15 @@ const filteredNavigation = computed(() => {
 
   return section ? [section] : []
 })
+
+// Ctrl+K / Cmd+K keyboard shortcut to open search
+defineShortcuts({
+  meta_k: () => { searchOpen.value = true },
+})
 </script>
 
 <template>
-  <!-- Single-row header with logo, section tabs, and search -->
+  <!-- Single-row header -->
   <header class="sticky top-0 z-50 border-b border-default bg-default/80 backdrop-blur-lg">
     <UContainer>
       <div class="flex items-center h-14 gap-6">
@@ -98,12 +135,12 @@ const filteredNavigation = computed(() => {
           </template>
         </nav>
 
-        <!-- Right: inline search bar + icons -->
+        <!-- Right: search bar + color mode dropdown -->
         <div class="flex items-center gap-2 shrink-0">
-          <!-- Inline search trigger styled as input -->
+          <!-- Inline search bar trigger -->
           <button
-            class="hidden sm:flex items-center gap-2 px-3 py-1.5 w-56 text-sm text-muted rounded-lg border border-default bg-elevated hover:bg-accented transition-colors"
-            @click="$event.preventDefault(); (document.querySelector('[data-content-search-button]') as HTMLElement)?.click()"
+            class="hidden sm:flex items-center gap-2 px-3 py-1.5 w-56 text-sm text-muted rounded-lg border border-default bg-elevated hover:bg-accented transition-colors cursor-text"
+            @click="searchOpen = true"
           >
             <UIcon name="i-lucide-search" class="size-4 shrink-0" />
             <span class="flex-1 text-left">Search...</span>
@@ -112,26 +149,15 @@ const filteredNavigation = computed(() => {
             </kbd>
           </button>
 
-          <!-- Hidden actual search button for programmatic click -->
-          <UContentSearchButton data-content-search-button class="sr-only" />
-
-          <UColorModeButton />
-          <UButton
-            icon="i-lucide-globe"
-            color="neutral"
-            variant="ghost"
-            to="https://deflowlabs.io"
-            target="_blank"
-            aria-label="DeFlow Website"
-          />
-          <UButton
-            icon="i-lucide-github"
-            color="neutral"
-            variant="ghost"
-            to="https://github.com/DeFlowLabs"
-            target="_blank"
-            aria-label="GitHub"
-          />
+          <!-- Color mode dropdown -->
+          <UDropdownMenu :items="colorModeItems">
+            <UButton
+              :icon="colorModeIcon"
+              color="neutral"
+              variant="ghost"
+              aria-label="Color mode"
+            />
+          </UDropdownMenu>
         </div>
       </div>
     </UContainer>
@@ -160,6 +186,14 @@ const filteredNavigation = computed(() => {
 
     <template #right>
       <UButton
+        icon="i-lucide-globe"
+        color="neutral"
+        variant="ghost"
+        to="https://deflowlabs.io"
+        target="_blank"
+        aria-label="DeFlow Website"
+      />
+      <UButton
         icon="i-lucide-linkedin"
         color="neutral"
         variant="ghost"
@@ -178,5 +212,6 @@ const filteredNavigation = computed(() => {
     </template>
   </UFooter>
 
-  <UContentSearch />
+  <!-- Search modal controlled by v-model -->
+  <UContentSearch v-model="searchOpen" />
 </template>
