@@ -1,8 +1,7 @@
 <script setup lang="ts">
 /**
- * Docs layout with 3-section sub-navigation bar.
- * Each section has its own filtered sidebar with a section title.
- * Sections: Getting Started, User Guide, Developer Docs.
+ * Docs layout with section tabs in the header row,
+ * filtered sidebar, and inline search bar.
  */
 const route = useRoute()
 
@@ -23,7 +22,7 @@ const activeSection = computed(() => {
 })
 
 /**
- * Header section tabs — 3 documentation sections.
+ * 3 documentation section tabs displayed in the header.
  */
 const sections = [
   { label: 'Getting Started', to: '/getting-started/what-is-deflow', key: 'getting-started', icon: 'i-lucide-rocket' },
@@ -32,8 +31,7 @@ const sections = [
 ]
 
 /**
- * Filters navigation to show only the active section's children.
- * Returns the section itself (with title) so the sidebar has a heading.
+ * Filters navigation to the active section (with title heading).
  */
 const filteredNavigation = computed(() => {
   if (!navigation.value) return []
@@ -51,65 +49,83 @@ const filteredNavigation = computed(() => {
     (item: any) => item.path === prefix,
   )
 
-  // Return the section as an array so UContentNavigation shows
-  // the section title as a top-level heading with children beneath it
   return section ? [section] : []
 })
 </script>
 
 <template>
-  <!-- Main header bar -->
-  <UHeader title="DeFlow Docs" to="/">
-    <template #right>
-      <UContentSearchButton label="Search..." />
-      <UColorModeButton />
-      <UButton
-        icon="i-lucide-globe"
-        color="neutral"
-        variant="ghost"
-        to="https://deflowlabs.io"
-        target="_blank"
-        aria-label="DeFlow Website"
-      />
-      <UButton
-        icon="i-lucide-github"
-        color="neutral"
-        variant="ghost"
-        to="https://github.com/DeFlowLabs"
-        target="_blank"
-        aria-label="GitHub"
-      />
-    </template>
-  </UHeader>
-
-  <!-- Section sub-navigation bar -->
-  <nav class="border-b border-default bg-default/50 backdrop-blur-sm sticky top-[var(--ui-header-height)] z-40">
+  <!-- Single-row header with logo, section tabs, and search -->
+  <header class="sticky top-0 z-50 border-b border-default bg-default/80 backdrop-blur-lg">
     <UContainer>
-      <div class="flex items-center gap-1 py-2 overflow-x-auto">
-        <NuxtLink
-          v-for="section in sections"
-          :key="section.key"
-          :to="section.to"
-          class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
-          :class="[
-            activeSection === section.key
-              ? 'text-primary bg-primary/10'
-              : 'text-muted hover:text-default hover:bg-elevated',
-          ]"
-        >
-          <UIcon :name="section.icon" class="size-4" />
-          {{ section.label }}
-          <UBadge
-            v-if="section.badge"
-            :label="section.badge"
-            size="xs"
-            color="neutral"
-            variant="subtle"
-          />
+      <div class="flex items-center h-14 gap-6">
+        <!-- Logo / Home -->
+        <NuxtLink to="/" class="text-lg font-bold text-default shrink-0">
+          DeFlow Docs
         </NuxtLink>
+
+        <!-- Section tabs (center) -->
+        <nav class="hidden md:flex items-center gap-1 flex-1">
+          <NuxtLink
+            v-for="section in sections"
+            :key="section.key"
+            :to="section.to"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap"
+            :class="[
+              activeSection === section.key
+                ? 'text-primary bg-primary/10'
+                : 'text-muted hover:text-default hover:bg-elevated',
+            ]"
+          >
+            <UIcon :name="section.icon" class="size-4" />
+            {{ section.label }}
+            <UBadge
+              v-if="section.badge"
+              :label="section.badge"
+              size="xs"
+              color="neutral"
+              variant="subtle"
+            />
+          </NuxtLink>
+        </nav>
+
+        <!-- Right: inline search bar + icons -->
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Inline search trigger styled as input -->
+          <button
+            class="hidden sm:flex items-center gap-2 px-3 py-1.5 w-56 text-sm text-muted rounded-lg border border-default bg-elevated hover:bg-accented transition-colors"
+            @click="$event.preventDefault(); (document.querySelector('[data-content-search-button]') as HTMLElement)?.click()"
+          >
+            <UIcon name="i-lucide-search" class="size-4 shrink-0" />
+            <span class="flex-1 text-left">Search...</span>
+            <kbd class="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted bg-default border border-default rounded">
+              Ctrl K
+            </kbd>
+          </button>
+
+          <!-- Hidden actual search button for programmatic click -->
+          <UContentSearchButton data-content-search-button class="sr-only" />
+
+          <UColorModeButton />
+          <UButton
+            icon="i-lucide-globe"
+            color="neutral"
+            variant="ghost"
+            to="https://deflowlabs.io"
+            target="_blank"
+            aria-label="DeFlow Website"
+          />
+          <UButton
+            icon="i-lucide-github"
+            color="neutral"
+            variant="ghost"
+            to="https://github.com/DeFlowLabs"
+            target="_blank"
+            aria-label="GitHub"
+          />
+        </div>
       </div>
     </UContainer>
-  </nav>
+  </header>
 
   <UContainer>
     <UPage>

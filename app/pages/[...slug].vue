@@ -42,7 +42,7 @@ useSeoMeta({
 const breadcrumbItems = computed(() => {
   const segments = route.path.split('/').filter(Boolean)
   const items: Array<{ label: string; to?: string; icon?: string }> = [
-    { label: 'Home', to: '/', icon: 'i-lucide-house' },
+    { label: '', to: '/', icon: 'i-lucide-house' },
   ]
 
   let currentPath = ''
@@ -65,7 +65,7 @@ const breadcrumbItems = computed(() => {
 
 <template>
   <UPage v-if="page">
-    <UBreadcrumb :items="breadcrumbItems" class="mb-6" />
+    <UBreadcrumb :items="breadcrumbItems" class="mb-3" />
 
     <UPageHeader
       :title="page.title"
