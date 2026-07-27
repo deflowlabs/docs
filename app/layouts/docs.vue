@@ -135,8 +135,8 @@ const filteredNavigation = computed(() => {
             Welcome to DeFlow
           </NuxtLink>
 
-          <!-- Section child pages (no section heading) -->
-          <UContentNavigation :navigation="filteredNavigation" />
+          <!-- Section child pages (expanded by default, no section heading) -->
+          <UContentNavigation :navigation="filteredNavigation" :default-open="true" />
         </UPageAside>
       </template>
 

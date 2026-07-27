@@ -37,10 +37,15 @@ useSeoMeta({
 
 /**
  * Builds breadcrumb items from the current route path.
- * Skips section-level segments (getting-started, user-guide, developer-docs)
- * since they are top-level menu categories, not navigable pages.
+ * Skips section-level and category-level segments since they are
+ * navigation groupings, not navigable pages.
  */
-const sectionSegments = new Set(['getting-started', 'user-guide', 'developer-docs'])
+const skipSegments = new Set([
+  // Top-level sections (header tabs)
+  'getting-started', 'user-guide', 'developer-docs',
+  // User Guide sub-categories (sidebar groups)
+  'trading', 'rewards', 'security', 'partners', 'support',
+])
 
 const breadcrumbItems = computed(() => {
   const segments = route.path.split('/').filter(Boolean)
@@ -52,8 +57,8 @@ const breadcrumbItems = computed(() => {
   for (let i = 0; i < segments.length; i++) {
     currentPath += `/${segments[i]}`
 
-    // Skip section-level segments (they're header tabs, not pages)
-    if (sectionSegments.has(segments[i])) continue
+    // Skip non-navigable segments (sections and categories)
+    if (skipSegments.has(segments[i])) continue
 
     const label = segments[i]
       .replace(/-/g, ' ')
