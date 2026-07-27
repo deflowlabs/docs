@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Docs layout with section tabs in the header row,
- * filtered sidebar, and Nuxt UI search/color mode components.
+ * filtered sidebar, and proper search + color mode.
  */
 const route = useRoute()
 
@@ -54,10 +54,12 @@ const filteredNavigation = computed(() => {
 </script>
 
 <template>
-  <!-- Header using UHeader for proper hydration -->
-  <UHeader title="DeFlow Docs" to="/">
-    <template #left>
-      <nav class="hidden md:flex items-center gap-1 ml-4">
+  <UHeader to="/">
+    <!-- Logo slot: title + section tabs in one row -->
+    <template #logo>
+      <span class="text-lg font-bold text-default">DeFlow Docs</span>
+
+      <nav class="hidden md:flex items-center gap-1 ml-6">
         <template v-for="section in sections" :key="section.key">
           <span
             v-if="section.disabled"
@@ -145,5 +147,5 @@ const filteredNavigation = computed(() => {
     </template>
   </UFooter>
 
-  <UContentSearch />
+  <UContentSearch :collections="['content']" />
 </template>
