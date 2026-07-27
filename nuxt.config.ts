@@ -111,5 +111,9 @@ export default defineNuxtConfig({
   // Nitro server configuration
   nitro: {
     preset: 'vercel',
+    prerender: {
+      routes: ['/'],
+      crawlLinks: true,
+    },
   },
 })
