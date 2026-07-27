@@ -41,9 +41,3 @@
     transition-duration: 0.01ms !important;
   }
 }
-
-/* Force sidebar navigation groups expanded by default */
-[data-slot="content-navigation"] [data-state="closed"] > [data-reka-accordion-content] {
-  display: block !important;
-  height: auto !important;
-}
