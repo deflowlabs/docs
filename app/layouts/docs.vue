@@ -17,7 +17,8 @@ const { data: navigation } = await useAsyncData(
  */
 const { data: files } = await useAsyncData(
   'docs-search-sections',
-  () => queryCollectionSearchSections('content'),
+  () => queryCollectionSearchSections('content').catch(() => []),
+  { default: () => [] },
 )
 
 const activeSection = computed(() => {

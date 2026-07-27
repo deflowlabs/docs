@@ -102,8 +102,10 @@ export default defineNuxtConfig({
 
 
 
-  // Route rules — ISR for all routes
+  // Route rules — prerender root, ISR for all content pages
   routeRules: {
+    '/': { prerender: true },
+    '/api/**': { isr: false },
     '/**': { isr: 3600 },
   },
 
