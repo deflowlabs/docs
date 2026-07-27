@@ -65,14 +65,12 @@ const breadcrumbItems = computed(() => {
 
 <template>
   <UPage v-if="page">
+    <UBreadcrumb :items="breadcrumbItems" class="mb-6" />
+
     <UPageHeader
       :title="page.title"
       :description="page.description"
-    >
-      <template #top>
-        <UBreadcrumb :items="breadcrumbItems" class="mb-3" />
-      </template>
-    </UPageHeader>
+    />
 
     <UPageBody>
       <ContentRenderer :value="page" />
