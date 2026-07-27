@@ -65,14 +65,14 @@ const breadcrumbItems = computed(() => {
 
 <template>
   <UPage v-if="page">
-    <UBreadcrumb :items="breadcrumbItems" class="mb-3" />
-
-    <UPageHeader
-      :title="page.title"
-      :description="page.description"
-    />
-
     <UPageBody>
+      <UBreadcrumb :items="breadcrumbItems" class="mb-4" />
+
+      <h1 class="text-3xl font-bold text-default mb-2">{{ page.title }}</h1>
+      <p v-if="page.description" class="text-lg text-muted mb-8">{{ page.description }}</p>
+
+      <USeparator class="mb-8" />
+
       <ContentRenderer :value="page" />
 
       <USeparator class="my-10" />

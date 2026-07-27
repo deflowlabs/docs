@@ -27,7 +27,7 @@ const activeSection = computed(() => {
 const sections = [
   { label: 'Getting Started', to: '/getting-started/what-is-deflow', key: 'getting-started', icon: 'i-lucide-rocket' },
   { label: 'User Guide', to: '/user-guide/trading/otc-deal-lifecycle', key: 'user-guide', icon: 'i-lucide-book-open' },
-  { label: 'Developer Docs', to: '/developer-docs', key: 'developer-docs', icon: 'i-lucide-code', badge: 'Soon' },
+  { label: 'Developer Docs', to: '/developer-docs', key: 'developer-docs', icon: 'i-lucide-code', badge: 'Soon', disabled: true },
 ]
 
 /**
@@ -65,27 +65,37 @@ const filteredNavigation = computed(() => {
 
         <!-- Section tabs (center) -->
         <nav class="hidden md:flex items-center gap-1 flex-1">
-          <NuxtLink
-            v-for="section in sections"
-            :key="section.key"
-            :to="section.to"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap"
-            :class="[
-              activeSection === section.key
-                ? 'text-primary bg-primary/10'
-                : 'text-muted hover:text-default hover:bg-elevated',
-            ]"
-          >
-            <UIcon :name="section.icon" class="size-4" />
-            {{ section.label }}
-            <UBadge
-              v-if="section.badge"
-              :label="section.badge"
-              size="xs"
-              color="neutral"
-              variant="subtle"
-            />
-          </NuxtLink>
+          <template v-for="section in sections" :key="section.key">
+            <!-- Disabled tab (Coming Soon) -->
+            <span
+              v-if="section.disabled"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md whitespace-nowrap text-muted/50 cursor-not-allowed opacity-50"
+            >
+              <UIcon :name="section.icon" class="size-4" />
+              {{ section.label }}
+              <UBadge
+                v-if="section.badge"
+                :label="section.badge"
+                size="xs"
+                color="neutral"
+                variant="subtle"
+              />
+            </span>
+            <!-- Active tab -->
+            <NuxtLink
+              v-else
+              :to="section.to"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap"
+              :class="[
+                activeSection === section.key
+                  ? 'text-primary bg-primary/10'
+                  : 'text-muted hover:text-default hover:bg-elevated',
+              ]"
+            >
+              <UIcon :name="section.icon" class="size-4" />
+              {{ section.label }}
+            </NuxtLink>
+          </template>
         </nav>
 
         <!-- Right: inline search bar + icons -->
