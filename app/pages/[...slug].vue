@@ -41,8 +41,8 @@ useSeoMeta({
  */
 const breadcrumbItems = computed(() => {
   const segments = route.path.split('/').filter(Boolean)
-  const items: Array<{ label: string; to?: string }> = [
-    { label: 'Home', to: '/' },
+  const items: Array<{ label: string; to?: string; icon?: string }> = [
+    { label: 'Home', to: '/', icon: 'i-lucide-house' },
   ]
 
   let currentPath = ''
@@ -53,7 +53,6 @@ const breadcrumbItems = computed(() => {
       .replace(/\b\w/g, (c) => c.toUpperCase())
 
     if (i === segments.length - 1) {
-      // Last segment — use the page title if available
       items.push({ label: page.value?.title || label })
     } else {
       items.push({ label, to: currentPath })
@@ -66,12 +65,14 @@ const breadcrumbItems = computed(() => {
 
 <template>
   <UPage v-if="page">
-    <UBreadcrumb :items="breadcrumbItems" class="mb-4" />
-
     <UPageHeader
       :title="page.title"
       :description="page.description"
-    />
+    >
+      <template #top>
+        <UBreadcrumb :items="breadcrumbItems" class="mb-3" />
+      </template>
+    </UPageHeader>
 
     <UPageBody>
       <ContentRenderer :value="page" />

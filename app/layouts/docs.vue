@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Docs layout with 3-section header navigation.
- * Sidebar filters to show only the active section's navigation.
+ * Sidebar filters to show only the active section's children.
  * Sections: Getting Started, User Guide, Developer Docs.
  */
 const route = useRoute()
@@ -20,7 +20,7 @@ const activeSection = computed(() => {
   if (path.startsWith('/getting-started')) return 'getting-started'
   if (path.startsWith('/user-guide')) return 'user-guide'
   if (path.startsWith('/developer-docs')) return 'developer-docs'
-  return ''
+  return 'getting-started'
 })
 
 /**
@@ -35,21 +35,27 @@ const sections = [
 
 /**
  * Filters navigation tree to only show children of the active section.
- * Falls back to full navigation if no section match is found.
+ * The section header itself is excluded — only its child pages/groups appear.
  */
 const filteredNavigation = computed(() => {
   if (!navigation.value) return []
-  const sectionMap: Record<string, string> = {
-    'getting-started': 'Getting Started',
-    'user-guide': 'User Guide',
-    'developer-docs': 'Developer Documentation',
-  }
-  const sectionTitle = sectionMap[activeSection.value]
-  if (!sectionTitle) return navigation.value
 
+  // Map section keys to their navigation path prefixes
+  const pathMap: Record<string, string> = {
+    'getting-started': '/getting-started',
+    'user-guide': '/user-guide',
+    'developer-docs': '/developer-docs',
+  }
+
+  const prefix = pathMap[activeSection.value]
+  if (!prefix) return []
+
+  // Find the top-level nav item whose path matches the section prefix
   const section = navigation.value.find(
-    (item: any) => item.title === sectionTitle,
+    (item: any) => item.path === prefix,
   )
+
+  // Return only the children (sub-pages/groups), not the section header itself
   return section?.children || []
 })
 </script>
