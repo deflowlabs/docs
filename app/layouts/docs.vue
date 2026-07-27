@@ -21,13 +21,11 @@ const { data: files } = await useAsyncData(
 )
 
 /**
- * Determines the active documentation section from the route path.
- * Root path (/) returns 'welcome' for the Welcome link highlight.
+ * Root '/' belongs to the Getting Started section.
  */
 const activeSection = computed(() => {
   const path = route.path
-  if (path === '/' || path === '') return 'welcome'
-  if (path.startsWith('/getting-started')) return 'getting-started'
+  if (path === '/' || path === '' || path.startsWith('/getting-started')) return 'getting-started'
   if (path.startsWith('/user-guide')) return 'user-guide'
   if (path.startsWith('/developer-docs')) return 'developer-docs'
   return 'getting-started'
@@ -49,10 +47,10 @@ const sections = [
 
 /**
  * Filters navigation to only the active section's CHILDREN
- * (no section heading). Returns empty on welcome page.
+ * (no section heading).
  */
 const filteredNavigation = computed(() => {
-  if (!navigation.value || activeSection.value === 'welcome') return []
+  if (!navigation.value) return []
   const pathMap: Record<string, string> = {
     'getting-started': '/getting-started',
     'user-guide': '/user-guide',
