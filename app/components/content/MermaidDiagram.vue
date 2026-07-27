@@ -112,6 +112,14 @@ function resetView() {
   translateY.value = 0
 }
 
+function zoomIn() {
+  scale.value = Math.min(3, scale.value + 0.2)
+}
+
+function zoomOut() {
+  scale.value = Math.max(0.3, scale.value - 0.2)
+}
+
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape' && isFullscreen.value) {
     isFullscreen.value = false
@@ -141,20 +149,42 @@ const transformStyle = computed(() => ({
       <!-- Toolbar -->
       <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/10 bg-[#1e293b]">
         <span class="text-xs text-slate-400 font-medium">Diagram</span>
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-0.5">
+          <!-- Zoom out -->
+          <button
+            class="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            title="Zoom out"
+            @click="zoomOut"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="8" x2="14" y1="11" y2="11"/></svg>
+          </button>
+          <!-- Zoom level -->
+          <span class="text-[10px] text-slate-500 w-8 text-center tabular-nums">{{ Math.round(scale * 100) }}%</span>
+          <!-- Zoom in -->
+          <button
+            class="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            title="Zoom in"
+            @click="zoomIn"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="11" x2="11" y1="8" y2="14"/><line x1="8" x2="14" y1="11" y2="11"/></svg>
+          </button>
+          <!-- Separator -->
+          <div class="w-px h-4 bg-white/10 mx-1" />
+          <!-- Reset view -->
           <button
             class="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             title="Reset view"
             @click="resetView"
           >
-            <UIcon name="i-lucide-maximize-2" class="size-4" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
           </button>
+          <!-- Fullscreen -->
           <button
             class="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
             title="Fullscreen (Esc to close)"
             @click="toggleFullscreen"
           >
-            <UIcon name="i-lucide-expand" class="size-4" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><polyline points="21 15 21 21 15 21"/><polyline points="3 9 3 3 9 3"/></svg>
           </button>
         </div>
       </div>
@@ -174,8 +204,8 @@ const transformStyle = computed(() => ({
       </div>
 
       <!-- Zoom hint (only show when diagram loaded) -->
-      <div v-if="svgContent" class="px-3 py-1 text-[10px] text-[var(--ui-text-muted)] text-center border-t border-[var(--ui-border)]">
-        Scroll to zoom · Drag to pan · Click expand for fullscreen
+      <div v-if="svgContent" class="px-3 py-1 text-[10px] text-slate-500 text-center border-t border-white/10">
+        Scroll or use +/− to zoom · Drag to pan
       </div>
     </div>
 

@@ -134,11 +134,11 @@ const showWelcomeLink = computed(() => activeSection.value === 'getting-started'
           <NuxtLink
             v-if="showWelcomeLink"
             to="/"
-            class="flex items-center gap-2 px-2.5 py-1.5 text-sm rounded-md transition-colors"
+            class="flex items-center gap-2 px-2.5 py-1.5 mb-4 pb-4 text-sm rounded-md transition-colors border-b border-[var(--ui-border)]"
             :class="[
               isWelcomePage
                 ? 'text-primary font-medium'
-                : 'text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)]',
+                : 'text-[var(--ui-text-muted)] hover:text-[var(--ui-text)]',
             ]"
           >
             Welcome to DeFlow
@@ -157,18 +157,6 @@ const showWelcomeLink = computed(() => activeSection.value === 'getting-started'
     </UPage>
   </div>
 
-  <footer class="border-t border-[var(--ui-border)] mt-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-between">
-      <span class="text-sm text-[var(--ui-text-muted)]">
-        © {{ new Date().getFullYear() }} DeFlow Labs. All rights reserved.
-      </span>
-      <div class="flex items-center gap-2">
-        <UButton icon="i-lucide-globe" color="neutral" variant="ghost" to="https://deflowlabs.io" target="_blank" aria-label="DeFlow Website" />
-        <UButton icon="i-lucide-linkedin" color="neutral" variant="ghost" to="https://linkedin.com/company/deflowlabs" target="_blank" aria-label="LinkedIn" />
-        <UButton icon="i-lucide-github" color="neutral" variant="ghost" to="https://github.com/DeFlowLabs" target="_blank" aria-label="GitHub" />
-      </div>
-    </div>
-  </footer>
 
   <UContentSearch
     :navigation="navigation"
