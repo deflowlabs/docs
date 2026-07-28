@@ -67,12 +67,12 @@ const mobileMenuOpen = ref(false)
 
 <template>
   <!-- Custom header -->
-  <header class="sticky top-0 z-50 border-b border-[var(--ui-border)] bg-[var(--ui-bg)]/80 backdrop-blur-lg">
+  <header class="sticky top-0 z-50 border-b border-(--ui-border) bg-(--ui-bg)/80 backdrop-blur-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center h-16 gap-4">
         <!-- Mobile menu button -->
         <button
-          class="md:hidden p-1.5 rounded-md text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)] transition-colors"
+          class="md:hidden p-1.5 rounded-md text-(--ui-text-muted) hover:text-(--ui-text) hover:bg-(--ui-bg-elevated) transition-colors"
           aria-label="Toggle menu"
           @click="mobileMenuOpen = !mobileMenuOpen"
         >
@@ -82,7 +82,7 @@ const mobileMenuOpen = ref(false)
         <!-- Logo + Title -->
         <NuxtLink to="/" class="flex items-center gap-2 shrink-0">
           <UIcon name="i-lucide-hexagon" class="size-6 text-primary" />
-          <span class="text-lg font-bold text-[var(--ui-text)]">DeFlow Docs</span>
+          <span class="text-lg font-bold text-(--ui-text)">DeFlow Docs</span>
         </NuxtLink>
 
         <!-- Section tabs (desktop) -->
@@ -99,7 +99,7 @@ const mobileMenuOpen = ref(false)
               :class="[
                 activeSection === section.key
                   ? 'text-primary bg-primary/10'
-                  : 'text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)]',
+                  : 'text-(--ui-text-muted) hover:text-(--ui-text) hover:bg-(--ui-bg-elevated)',
               ]">
               <UIcon :name="section.icon" class="size-4" />
               {{ section.label }}
@@ -124,7 +124,7 @@ const mobileMenuOpen = ref(false)
     </div>
 
     <!-- Mobile dropdown menu -->
-    <div v-if="mobileMenuOpen" class="md:hidden border-t border-[var(--ui-border)] bg-[var(--ui-bg)]">
+    <div v-if="mobileMenuOpen" class="md:hidden border-t border-(--ui-border) bg-(--ui-bg)">
       <nav class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
         <template v-for="section in sections" :key="section.key">
           <span v-if="section.disabled"
@@ -138,7 +138,7 @@ const mobileMenuOpen = ref(false)
             :class="[
               activeSection === section.key
                 ? 'text-primary bg-primary/10'
-                : 'text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)]',
+                : 'text-(--ui-text-muted) hover:text-(--ui-text) hover:bg-(--ui-bg-elevated)',
             ]"
             @click="mobileMenuOpen = false">
             <UIcon :name="section.icon" class="size-4" />
@@ -155,11 +155,11 @@ const mobileMenuOpen = ref(false)
         <UPageAside>
           <!-- Welcome link — only in Getting Started section -->
           <NuxtLink v-if="showWelcomeLink" to="/"
-            class="flex items-center gap-2 pr-2.5 py-1.5 mb-4 pb-4 text-sm rounded-md transition-colors border-b border-[var(--ui-border)]"
+            class="flex items-center gap-2 pr-2.5 py-1.5 mb-4 pb-4 text-sm rounded-md transition-colors border-b border-(--ui-border)"
             :class="[
               isWelcomePage
                 ? 'text-primary font-medium'
-                : 'text-[var(--ui-text-muted)] hover:text-[var(--ui-text)]',
+                : 'text-(--ui-text-muted) hover:text-(--ui-text)',
             ]">
             Welcome to DeFlow
           </NuxtLink>

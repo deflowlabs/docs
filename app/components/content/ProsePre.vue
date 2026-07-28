@@ -58,13 +58,13 @@ const isMermaid = computed(() => props.language === 'mermaid')
   <ClientOnly v-if="isMermaid && mermaidCode">
     <MermaidDiagram :code="mermaidCode" />
     <template #fallback>
-      <div class="my-6 flex justify-center rounded-lg bg-[#0f172a] border border-[var(--ui-border)] p-8">
-        <div class="text-[var(--ui-text-muted)] text-sm animate-pulse">Rendering diagram...</div>
+      <div class="my-6 flex justify-center rounded-lg bg-[#0f172a] border border-default p-8">
+        <div class="text-muted text-sm animate-pulse">Rendering diagram...</div>
       </div>
     </template>
   </ClientOnly>
-  <div v-else-if="isMermaid" class="my-6 flex justify-center rounded-lg bg-[#0f172a] border border-[var(--ui-border)] p-8">
-    <div class="text-[var(--ui-text-muted)] text-sm">Diagram unavailable</div>
+  <div v-else-if="isMermaid" class="my-6 flex justify-center rounded-lg bg-[#0f172a] border border-default p-8">
+    <div class="text-muted text-sm">Diagram unavailable</div>
   </div>
   <pre v-else :class="`language-${language}`"><slot /></pre>
 </template>

@@ -145,7 +145,7 @@ const transformStyle = computed(() => ({
 
 <template>
   <div class="mermaid-wrapper my-6 relative group">
-    <div class="rounded-lg bg-[#0f172a] border border-[var(--ui-border)] overflow-hidden">
+    <div class="rounded-lg bg-[#0f172a] border border-default overflow-hidden">
       <!-- Toolbar -->
       <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/10 bg-[#1e293b]">
         <span class="text-xs text-slate-400 font-medium">Diagram</span>
@@ -191,7 +191,7 @@ const transformStyle = computed(() => ({
 
       <!-- Diagram content -->
       <div
-        class="p-4 overflow-auto max-h-[500px] flex justify-center"
+        class="p-4 overflow-auto max-h-125 flex justify-center"
         @wheel.prevent="handleWheel"
         @mousedown="handleMouseDown"
         @mousemove="handleMouseMove"
@@ -200,7 +200,7 @@ const transformStyle = computed(() => ({
       >
         <div v-if="svgContent" :style="transformStyle" class="transition-transform duration-100 origin-center" v-html="svgContent" />
         <div v-else-if="renderError" class="text-red-400/70 text-sm py-8">{{ renderError }}</div>
-        <div v-else class="text-[var(--ui-text-muted)] text-sm py-8 animate-pulse">Rendering diagram...</div>
+        <div v-else class="text-muted text-sm py-8 animate-pulse">Rendering diagram...</div>
       </div>
 
       <!-- Zoom hint (only show when diagram loaded) -->
@@ -212,19 +212,19 @@ const transformStyle = computed(() => ({
     <!-- Fullscreen overlay (inline, no Teleport to avoid fragment root) -->
     <div
       v-if="isFullscreen"
-      class="fixed inset-0 z-[100] bg-[#0a0a0f]/95 backdrop-blur-sm flex flex-col"
+      class="fixed inset-0 z-100 bg-[#0a0a0f]/95 backdrop-blur-sm flex flex-col"
     >
-      <div class="flex items-center justify-between px-6 py-3 border-b border-[var(--ui-border)]">
-        <span class="text-sm font-medium text-[var(--ui-text)]">Diagram — Fullscreen</span>
+      <div class="flex items-center justify-between px-6 py-3 border-b border-default">
+        <span class="text-sm font-medium text-default">Diagram — Fullscreen</span>
         <div class="flex items-center gap-2">
           <button
-            class="px-2 py-1 rounded text-xs text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)] transition-colors"
+            class="px-2 py-1 rounded text-xs text-muted hover:text-default hover:bg-elevated transition-colors"
             @click="resetView"
           >
             Reset
           </button>
           <button
-            class="px-2 py-1 rounded text-xs text-[var(--ui-text-muted)] hover:text-[var(--ui-text)] hover:bg-[var(--ui-bg-elevated)] transition-colors"
+            class="px-2 py-1 rounded text-xs text-muted hover:text-default hover:bg-elevated transition-colors"
             @click="toggleFullscreen"
           >
             Close (Esc)
@@ -243,7 +243,7 @@ const transformStyle = computed(() => ({
         <div v-if="svgContent" :style="transformStyle" class="transition-transform duration-100 origin-center" v-html="svgContent" />
       </div>
 
-      <div class="px-6 py-2 text-xs text-[var(--ui-text-muted)] text-center border-t border-[var(--ui-border)]">
+      <div class="px-6 py-2 text-xs text-muted text-center border-t border-default">
         Scroll to zoom · Drag to pan · {{ Math.round(scale * 100) }}%
       </div>
     </div>
