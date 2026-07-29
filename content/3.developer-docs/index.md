@@ -10,7 +10,7 @@ This section is currently under development. The following resources will be ava
 | Section | Description | Status |
 |---------|-------------|:------:|
 | **API Reference** | RESTful API endpoints for deal management, user accounts, and settlement operations | Coming Soon |
-| **Authentication** | Privy-based authentication flow, JWT tokens, and session management | Coming Soon |
+| **Authentication** | Authentication flow, JWT tokens, and session management | Coming Soon |
 | **Webhooks** | Real-time event notifications for deal state changes, settlements, and compliance updates | Coming Soon |
 | **Smart Contracts** | Solidity contract ABIs, deployment addresses, and integration patterns for EscrowFactory, FeeRouter, and ReferralVault | Coming Soon |
 | **SDKs and Libraries** | TypeScript SDK for programmatic deal creation and management | Coming Soon |
