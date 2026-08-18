@@ -1,143 +1,239 @@
-# DeFlow Labs — Documentation Site
+# DeFlow Documentation
 
-> Official documentation for the DeFlow settlement platform. Built with Nuxt 4, Nuxt Content v3, and Nuxt UI v3.
+Institutional product documentation for DeFlow, built with Nuxt 4, Nuxt Content 3, Nuxt UI 4, Tailwind CSS 4 and Mermaid. Release labels describe what is currently available without reducing the documentation to a temporary beta manual. This README is the single operating manual for setup, content governance, architecture, testing and Vercel deployment.
 
-[![Nuxt](https://img.shields.io/badge/Nuxt-4-00DC82?logo=nuxtdotjs&logoColor=white)](https://nuxt.com/)
-[![Nuxt Content](https://img.shields.io/badge/Nuxt_Content-v3-00DC82)](https://content.nuxt.com/)
-[![Nuxt UI](https://img.shields.io/badge/Nuxt_UI-v3-00DC82)](https://ui.nuxt.com/)
-[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?logo=vercel&logoColor=white)](https://vercel.com/)
+**Public URL:** [docs.deflowlabs.io](https://docs.deflowlabs.io)
+**Runtime:** Node.js 24 LTS and npm 11+
 
-**Live:** [docs.deflowlabs.io](https://docs.deflowlabs.io)
+## Ownership and release model
 
-## Overview
+This repository owns public Markdown pages, navigation, search, page outlines, accessible content components, SEO, static generation and the checked-in public product-facts snapshot. It does not own canonical product claims or Sanity marketing content.
 
-The documentation site provides comprehensive guides for users, partners, and developers:
+The public deployment is fully static and exposes no Nuxt Studio API. Optional visual authoring runs as a separate authenticated SSR project, writes to `content-editor`, and reaches `master` through a reviewed pull request.
 
-- **Getting Started** — Platform overview, account creation, identity verification, walkthrough
-- **User Guide** — Trading lifecycle, rewards system, security policies, partner program, FAQ
-- **Developer Docs** — API reference and integration guides *(coming soon)*
+```text
+core/docs/PRODUCT_FACTS.yaml
+             │ filtered, checked sync
+             ▼
+content/data/product-facts.yaml ──► fact-driven cards and tables
 
-### Key Features
+content/**/*.md ──► Nuxt Content ──► route renderer
+                                         ├─ navigation, search and route-reactive ToC
+                                         ├─ canonical, social and structured metadata
+                                         └─ static Vercel output
+```
 
-- 🔍 Full-text search via `UContentSearch` with keyboard shortcut (`⌘K`)
-- 🌗 Dark/light mode with "Atmospheric Institutional" design system
-- 📊 Interactive Mermaid diagrams with zoom, pan, and fullscreen
-- 📱 Fully responsive with mobile hamburger menu
-- 📑 Table of contents with scroll-aware highlighting
-- ⬅️ ➡️ Previous/Next page navigation via `UContentSurround`
+## Repository layout
 
-## Tech Stack
+```text
+docs/
+├── app/
+│   ├── components/content/   # Markdown UI and fact-driven components
+│   ├── layouts/docs.vue      # Responsive navigation, search and current-page ToC
+│   └── pages/                # Content route and index/error renderers
+├── content/                  # Reviewed Markdown and generated public data
+├── public/                   # Local fonts, robots and static assets
+├── scripts/                  # Fact sync, content policy and static-output checks
+├── tests/e2e/                # Playwright and axe accessibility coverage
+├── content.config.ts         # Collection schemas and generated content types
+├── nuxt.config.ts            # Static/public and optional authoring configuration
+└── vercel.json               # Deployment commands, output and edge headers
+```
 
-| Layer | Technology |
-|:------|:-----------|
-| Framework | Nuxt 4 (Vue 3) |
-| Content | Nuxt Content v3 (Markdown in Git) |
-| UI | Nuxt UI v3 (components, typography, search) |
-| Styling | Tailwind CSS v4 |
-| Diagrams | Mermaid.js (client-side rendering) |
-| Deployment | Vercel (fully pre-rendered, static) |
+The `core` and `docs` repositories must be siblings so fact synchronisation can read `../core/docs/PRODUCT_FACTS.yaml`.
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js ≥ 18
-
-### Setup
+## Local setup
 
 ```bash
-# Install dependencies
+node --version
+npm --version
 npm install
-
-# Start dev server (http://localhost:3000)
+npm run facts:sync
+npm run check
 npm run dev
 ```
 
-### Production Build
+Open `http://localhost:3000`. Normal public-site development requires no secret. Stop the server with `Ctrl+C`.
+
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Start Nuxt development mode |
+| `npm run facts:sync` | Regenerate the filtered public ledger snapshot |
+| `npm run facts:check` | Reject snapshot drift |
+| `npm run check:content` | Validate metadata, links, headings and prohibited claims |
+| `npm run typecheck` | Run Nuxt/Vue type checking |
+| `npm run check` | Run fact, content and type checks |
+| `npm run generate` | Generate every route and verify static/SEO output |
+| `npm run preview:static` | Serve `.output/public` on port 4173 |
+| `npm run test:e2e` | Run responsive, keyboard and axe browser tests |
+
+Generate before Playwright because `preview:static` serves existing output and does not rebuild it.
+
+## Information architecture
+
+The navigation follows reader intent:
+
+1. **Getting Started** explains the DeFlow product model, product availability, access, identity, and wallet setup.
+2. **User Guide** covers Trading, Syndicates, Rewards, Security, Partners and Help.
+3. **Developer Guide — Coming soon** is a disabled, non-linking label. No Developer Guide route, content, search result or sitemap entry may exist until a supported public interface is approved.
+
+The documentation is a durable product reference, not a temporary beta test manual. Release status belongs in availability labels, the Product Availability page, and environment-specific safety notes. Syndicates currently support FIFO allocation and per-approved-investor Sepolia escrows; pro-rata allocation, pooled escrow, and the on-chain controller remain planned. Never hide an implemented feature because its broader roadmap is incomplete, and never promote a roadmap increment as available.
+
+Use numeric filename prefixes to control order; Nuxt Content removes them from routes:
+
+```text
+content/1.getting-started/1.what-is-deflow.md
+→ /getting-started/what-is-deflow
+```
+
+Keep published URLs stable. Add a reviewed redirect before changing one.
+
+## Page contract and editorial standard
+
+Every public page requires:
+
+```yaml
+---
+title: Page title
+description: One clear 50–160 character search and social summary.
+audience: [users, support]
+availability: private-beta
+lastVerified: 'YYYY-MM-DD'
+sourceRefs: [PRODUCT_FACTS.yaml, relevant-runtime-file.ts]
+robots: index,follow
+---
+```
+
+Allowed audiences are `users`, `partners`, `support` and `risk-reviewers`. Availability is `private-beta`, `limited-beta`, `planned` or `internal`.
+
+Write in plain British English. Begin body sections at H2 because the renderer supplies H1. Define specialised terms, keep procedures action-led, identify prerequisites and safe failure paths, and state testnet/audit/legal limits beside affected claims. Update `lastVerified` only after checking all named evidence. The right-hand ToC comes from the current route; never cache or hard-code it.
+
+## Product-fact governance
+
+Never edit `content/data/product-facts.yaml` directly. The sync deliberately excludes internal GitHub roadmap and delivery-history records.
+
+1. Verify runtime constants, deployment manifests, current records or signed evidence.
+2. Edit `../core/docs/PRODUCT_FACTS.yaml` and its matching `factRecords` owner, date, revision and sources.
+3. In `/core`, run `pnpm product:sync`.
+4. In `/docs`, run `npm run facts:sync && npm run check`.
+5. Review rendered availability, fees, VIP, network and assurance components.
+
+Runtime/deployment evidence determines availability. GitHub issues determine delivery tracking. A closed issue does not automatically approve a public claim. CI checks out `deflowlabs/core` beside this repository; provide read-only `CORE_REPOSITORY_TOKEN` if core is private.
+
+## Content components
+
+| Component | Use |
+|---|---|
+| `::product-availability` | Complete fact-driven capability boundary |
+| `::feature-grid` | Visual section or journey index |
+| `::fee-schedule` | Commercial fee tiers from structured facts |
+| `::vip-ranks` | VIP thresholds and discounts from structured facts |
+| `::callout{type}` | Material note, tip, warning or danger |
+| `::step-guide` / `:::step` | Ordered procedure |
+| Mermaid fence | Accessible process or relationship visual |
+
+```md
+::step-guide
+:::step{title="Connect the approved wallet"}
+Follow the wallet prompt and confirm the displayed network.
+:::
+::
+```
+
+Label every Mermaid diagram and explain its essential meaning in prose:
+
+````md
+```mermaid [OTC deal lifecycle]
+flowchart LR
+  A[Invitation] --> B[Funding] --> C[Settlement]
+```
+````
+
+`MermaidDiagram.vue` uses strict security, light/dark themes, named keyboard controls, reduced motion and a focus-managed fullscreen dialog. Raw diagram source is not public.
+
+## Accessibility and SEO
+
+The target is WCAG 2.2 AA. Preserve landmarks, skip link, visible focus, semantic tables, accessible overflow, named controls, keyboard search, Escape handling and focus return.
+
+Every indexable route needs a unique title/description, canonical, robots policy, Open Graph/Twitter metadata, JSON-LD, breadcrumbs and sitemap entry. `scripts/verify-static.mjs` validates generated HTML. Error and retired Developer Guide routes are 404/noindex. Fonts are bundled locally using the approved Geist/Geist Mono brand stack.
+
+## Environment variables
+
+### Public Docs Vercel project
+
+Set in Development, Preview and Production:
+
+| Variable | Value | Secret |
+|---|---|---|
+| `NUXT_STUDIO_ENABLED` | `false` | No |
+
+Do not add GitHub OAuth credentials to the public project.
+
+### Optional separate Nuxt Studio authoring project
+
+This is not the Sanity Studio in `/studio`.
+
+| Variable | Purpose | Secret |
+|---|---|---|
+| `NUXT_STUDIO_ENABLED=true` | Enables authoring runtime | No |
+| `NUXT_STUDIO_BRANCH=content-editor` | Review branch | No |
+| `STUDIO_GITHUB_CLIENT_ID` | GitHub OAuth client ID | No |
+| `STUDIO_GITHUB_CLIENT_SECRET` | GitHub OAuth secret | Yes |
+
+Use callback `https://<authoring-host>/__nuxt_studio/auth/github`. Protect `content-editor` and require a pull request into `master`.
+
+## GitHub Actions
+
+`.github/workflows/quality.yml` runs on every pull request and push to `master` with Node 24. It checks out the canonical `core` facts beside this repository, installs from the lockfile, validates facts/content/types, generates and inspects every static route, runs responsive Playwright and axe coverage, audits production dependencies, and publishes a readable run summary.
+
+The `docs-playwright-*` artifact contains a navigable `playwright-report/index.html` plus retry evidence for 14 days. If `deflowlabs/core` is private, configure the repository secret `CORE_REPOSITORY_TOKEN` as a read-only fine-grained token for that repository; no token is required when the Actions token can read it. Dependabot reviews npm and GitHub Actions updates weekly. Action dependencies are pinned to immutable SHAs and obsolete runs are cancelled.
+
+## Vercel deployment
+
+`vercel.json` is authoritative.
+
+| Setting | Value |
+|---|---|
+| Root Directory | `docs` in a parent repository; blank when standalone |
+| Framework Preset | Nuxt.js / automatic |
+| Node.js | 24.x |
+| Install | `npm ci` |
+| Build | `npm run generate` |
+| Output | `.output/public` |
+| Production Branch | `master` |
+| Domain | `docs.deflowlabs.io` |
+
+Do not replace `generate` with `build`; generation also verifies routes and SEO. Keep the facts snapshot checked in so Vercel needs no private-core access during build.
+
+Before promotion:
 
 ```bash
-# Build with full pre-rendering (all pages)
-npm run build
+npm ci
+npm run facts:check
+npm run check
+npm run generate
+npm run test:e2e
+npm audit --omit=dev
 ```
 
-## Content Structure
+Confirm `robots.txt` and `sitemap.xml` return 200, `/developer-guide/coming-soon` returns a noindex 404, `/_studio` is unavailable, edge security headers are present, and search/ToC work after client navigation. Roll back through Vercel history if unhealthy; fix source rather than generated output.
 
-Documentation is authored in Markdown and organized into numbered sections. The numeric prefixes control ordering and are stripped from URLs.
+## Troubleshooting
 
-```
-content/
-├── 0.index.md                              # Welcome page
-├── 1.getting-started/
-│   ├── 1.what-is-deflow.md
-│   ├── 2.creating-your-account.md
-│   ├── 3.identity-verification.md
-│   └── 4.platform-walkthrough.md
-├── 2.user-guide/
-│   ├── 1.trading/
-│   │   ├── 1.otc-deal-lifecycle.md
-│   │   ├── 2.creating-a-deal.md
-│   │   ├── 3.escrow-and-funding.md
-│   │   └── 4.settlement.md
-│   ├── 2.rewards/
-│   │   ├── 1.vip-tiers.md
-│   │   ├── 2.referral-program.md
-│   │   └── 3.ranks-system.md
-│   ├── 3.security/
-│   │   ├── 1.zero-pii-policy.md
-│   │   └── 2.smart-contract-security.md
-│   ├── 4.partners/
-│   │   ├── 1.partner-program.md
-│   │   └── 2.contact.md
-│   └── 5.support/
-│       ├── 1.faq.md
-│       └── 2.glossary.md
-└── 3.developer-docs/
-    └── index.md                            # Placeholder (Coming Soon)
-```
+- **Page or ToC is stale:** stop old servers, regenerate, restart `preview:static`, and hard-refresh. Test client-side navigation.
+- **Facts are stale:** update core and run `facts:sync`; never patch the snapshot.
+- **Page is missing:** check its collection, prefix and frontmatter, then run `npm run check`.
+- **Broken static link:** use an absolute public path and create the target before linking it.
+- **Authoring fails remotely:** verify SSR, exact OAuth callback, server-side secrets and that public Studio remains disabled.
 
-## Custom Components
+## Maintenance rules
 
-### MDC Components (used in Markdown)
-
-| Component | Usage |
-|:----------|:------|
-| `::callout{type}` | Renders a `UAlert` — types: `note`, `tip`, `warning`, `danger` |
-| `::step-guide` / `:::step{title n}` | Numbered procedure steps |
-| `` ```mermaid `` | Interactive diagrams with zoom/pan/fullscreen |
-
-### Vue Components
-
-| Component | Purpose |
-|:----------|:--------|
-| `ProsePre` | Intercepts fenced code blocks; renders `mermaid` blocks as diagrams |
-| `MermaidDiagram` | Client-side Mermaid renderer with zoom controls and fullscreen |
-| `ProseCallout` | Styled alert boxes for documentation callouts |
-| `StepGuide` / `Step` | Numbered step-by-step procedure display |
-
-## Architecture
-
-```
-┌────────────────┐     ┌────────────────┐     ┌────────────────┐
-│   Markdown     │────▶│   Nuxt Build   │────▶│   Vercel       │
-│   (content/)   │     │   (pre-render) │     │   (static)     │
-└────────────────┘     └────────┬───────┘     └────────────────┘
-                                │
-                    ┌───────────┼───────────┐
-                    │           │           │
-              ┌─────▼─────┐ ┌──▼──┐ ┌─────▼─────┐
-              │  Nuxt UI  │ │ MDC │ │  Mermaid  │
-              │  (search, │ │     │ │  (client) │
-              │   nav)    │ │     │ │           │
-              └───────────┘ └─────┘ └───────────┘
-```
-
-## Adding New Pages
-
-1. Create a Markdown file in the appropriate `content/` directory
-2. Add YAML frontmatter with `title` and `description`
-3. Use numeric prefixes for ordering (e.g., `5.new-page.md`)
-4. The page is automatically indexed, searchable, and pre-rendered
-
-## License
+- Add a ledger capability before changing public availability.
+- Add a section overview when a category grows beyond three procedures.
+- Split pages by user goal, not arbitrary length.
+- Use UI elements only when they improve comprehension.
+- Update the glossary for new terms and FAQ for repeated questions.
+- Document exported functions, non-obvious state and security boundaries close to code; avoid comments that restate syntax.
+- Run the static/browser suite after changes to navigation, components, metadata or layouts.
 
 Proprietary © DeFlow Labs

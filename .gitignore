@@ -6,6 +6,8 @@
 .cache
 .vercel
 dist
+playwright-report
+test-results
 
 # Node dependencies
 node_modules

@@ -1,0 +1,71 @@
+name: Documentation quality
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - name: Check out documentation
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          path: docs
+      - name: Check out canonical product facts
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: deflowlabs/core
+          path: core
+          token: ${{ secrets.CORE_REPOSITORY_TOKEN || github.token }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - id: install
+        run: npm ci
+      - id: check
+        run: npm run check
+      - id: generate
+        run: npm run generate
+      - run: npx --no-install playwright install --with-deps chromium
+      - id: browser
+        run: npm run test:e2e
+      - id: audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Upload browser report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: docs-playwright-${{ github.run_number }}
+          path: docs/playwright-report/
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Publish documentation summary
+        if: always()
+        run: |
+          {
+            echo '## Documentation quality'
+            echo
+            echo '| Gate | Result |'
+            echo '|---|---|'
+            echo '| Content, facts and types | `${{ steps.check.outcome }}` |'
+            echo '| Static generation and SEO | `${{ steps.generate.outcome }}` |'
+            echo '| Browser and accessibility | `${{ steps.browser.outcome }}` |'
+            echo '| Production dependency audit | `${{ steps.audit.outcome }}` |'
+            echo
+            echo 'The Playwright artifact contains the navigable HTML report and retry evidence.'
+          } >> "$GITHUB_STEP_SUMMARY"
