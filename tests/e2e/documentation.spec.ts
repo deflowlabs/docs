@@ -1,5 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
+import { readdir } from 'node:fs/promises'
+import { resolve } from 'node:path'
 
 const routes = [
   '/',
@@ -8,6 +10,15 @@ const routes = [
   '/user-guide/trading/fees-and-supported-assets',
   '/user-guide/syndicates/overview',
   '/user-guide/security/risks-and-assurance',
+]
+
+const diagramRoutes = [
+  { route: '/getting-started/what-is-deflow', label: 'DeFlow transaction model' },
+  { route: '/user-guide/trading/otc-deal-lifecycle', label: 'OTC deal lifecycle' },
+  { route: '/user-guide/trading/escrow-and-funding', label: 'Escrow deployment and funding' },
+  { route: '/user-guide/rewards/referral-program', label: 'Referral reward flow' },
+  { route: '/user-guide/syndicates/overview', label: 'Syndicate lifecycle' },
+  { route: '/user-guide/security/data-privacy', label: 'Identity data boundary' },
 ]
 
 for (const route of routes) {
@@ -57,6 +68,16 @@ test('search is named, keyboard-ready and focused when opened', async ({ page })
   await expect(dialog).toBeHidden()
 })
 
+test('Nuxt Content serves SQLite WebAssembly with the correct media type', async ({ request }) => {
+  const assets = await readdir(resolve('.output/public/_nuxt'))
+  const wasmAsset = assets.find(asset => asset.endsWith('.wasm'))
+  expect(wasmAsset, 'generated SQLite WebAssembly asset').toBeTruthy()
+
+  const response = await request.get(`/_nuxt/${wasmAsset}`)
+  expect(response.ok()).toBe(true)
+  expect(response.headers()['content-type']).toMatch(/^application\/wasm(?:;|$)/i)
+})
+
 test('table of contents follows client-side page navigation', async ({ page }) => {
   await page.goto('/getting-started/what-is-deflow')
 
@@ -74,16 +95,57 @@ test('table of contents follows client-side page navigation', async ({ page }) =
   await expect(toc).not.toContainText('Product capabilities')
 })
 
+for (const diagram of diagramRoutes) {
+  test(`${diagram.label} is a responsive, accessible inline SVG`, async ({ page }) => {
+    await page.goto(diagram.route)
+
+    const graphic = page.getByRole('img', { name: diagram.label }).first()
+    const canvas = graphic
+    const svg = graphic.locator('svg')
+    await expect(graphic).toBeVisible()
+    await expect(svg).toBeVisible()
+    await expect(svg).toHaveAttribute('aria-hidden', 'true')
+    await expect(graphic.locator('iframe')).toHaveCount(0)
+    await expect(graphic.getByRole('button')).toHaveCount(0)
+    await expect(page.getByText('Text source for this diagram')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Zoom diagram in' })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Reset diagram view' })).toHaveCount(0)
+
+    const sizing = await canvas.evaluate(element => {
+      const styles = window.getComputedStyle(element)
+      const horizontalPadding = Number.parseFloat(styles.paddingLeft) + Number.parseFloat(styles.paddingRight)
+      return {
+        clientWidth: element.clientWidth,
+        contentWidth: element.clientWidth - horizontalPadding,
+        scrollWidth: element.scrollWidth,
+        svgWidth: element.querySelector('svg')?.getBoundingClientRect().width || 0,
+        viewportWidth: window.innerWidth,
+      }
+    })
+    if (sizing.viewportWidth < 640) {
+      expect(sizing.scrollWidth).toBeGreaterThan(sizing.clientWidth)
+    } else {
+      expect(sizing.svgWidth).toBeGreaterThanOrEqual(sizing.contentWidth - 2)
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()
+    expect(results.violations).toEqual([])
+  })
+}
+
 test('Mermaid diagram has a text alternative and a focus-managed fullscreen view', async ({ page }) => {
   await page.goto('/user-guide/trading/otc-deal-lifecycle')
   await expect(page.getByRole('img', { name: 'OTC deal lifecycle' })).toBeVisible()
   await expect(page.getByText('Text source for this diagram')).toHaveCount(0)
 
-  const open = page.getByRole('button', { name: 'Open diagram in fullscreen' })
+  const open = page.getByRole('button', { name: 'Expand diagram' })
   await open.click()
+  await expect(page.getByRole('dialog', { name: 'OTC deal lifecycle' })).toBeVisible()
   const close = page.getByRole('button', { name: 'Close fullscreen diagram' })
   await expect(close).toBeFocused()
   await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog', { name: 'OTC deal lifecycle' })).toBeHidden()
   await expect(open).toBeFocused()
 })
 

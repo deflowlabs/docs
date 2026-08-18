@@ -60,6 +60,16 @@ for (const file of files) {
       if (!routes.has(route)) failures.push(`${name}: broken internal link ${link}`)
     }
   }
+
+  // A visible fence label becomes the diagram's accessible name and caption.
+  // Reject unnamed or empty diagrams before they reach the public build.
+  const mermaidFenceCount = [...content.matchAll(/```mermaid\b/g)].length
+  const mermaidFences = [...content.matchAll(/```mermaid\s+\[([^\]\r\n]+)\][^\r\n]*\r?\n([\s\S]*?)```/g)]
+  if (mermaidFences.length !== mermaidFenceCount) failures.push(`${name}: every Mermaid diagram must have a [meaningful label]`)
+  for (const [, label, source] of mermaidFences) {
+    if (!label?.trim()) failures.push(`${name}: Mermaid diagram label must not be empty`)
+    if (!source?.trim()) failures.push(`${name}: Mermaid diagram source must not be empty`)
+  }
 }
 
 if (files.some(file => /developer-(?:docs|guide)/.test(file))) failures.push('Developer Guide content must not exist until supported public interfaces are available.')
