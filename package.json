@@ -37,10 +37,10 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.62.1",
-    "@types/node": "24.10.1",
+    "@types/node": "24.13.3",
     "serve": "^14.2.6",
     "typescript": "5.9.3",
-    "vue-tsc": "3.2.2",
+    "vue-tsc": "3.3.10",
     "yaml": "2.9.0"
   },
   "overrides": {
