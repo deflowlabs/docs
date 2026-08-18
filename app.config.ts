@@ -39,37 +39,12 @@ export default defineAppConfig({
     ],
   },
 
-  // Footer configuration
-  footer: {
-    credits: `© ${new Date().getFullYear()} DeFlow Labs`,
-    links: [
-      {
-        icon: 'i-lucide-globe',
-        to: 'https://deflowlabs.io',
-        target: '_blank',
-        label: 'Website',
-      },
-      {
-        icon: 'i-lucide-linkedin',
-        to: 'https://linkedin.com/company/deflowlabs',
-        target: '_blank',
-        label: 'LinkedIn',
-      },
-      {
-        icon: 'i-lucide-github',
-        to: 'https://github.com/DeFlowLabs',
-        target: '_blank',
-        label: 'GitHub',
-      },
-    ],
-  },
-
   // Table of Contents
   toc: {
     title: 'On This Page',
     bottom: {
       title: 'Community',
-      edit: 'https://github.com/DeFlowLabs/docs/edit/main/content',
+      edit: 'https://github.com/DeFlowLabs/docs/edit/content-editor/content',
       links: [
         {
           icon: 'i-lucide-message-square',

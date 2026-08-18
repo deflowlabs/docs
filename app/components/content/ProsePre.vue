@@ -56,7 +56,7 @@ const isMermaid = computed(() => props.language === 'mermaid')
 
 <template>
   <ClientOnly v-if="isMermaid && mermaidCode">
-    <MermaidDiagram :code="mermaidCode" />
+    <MermaidDiagram :code="mermaidCode" :label="filename || 'Process diagram'" />
     <template #fallback>
       <div class="my-6 flex justify-center rounded-lg bg-[#0f172a] border border-default p-8">
         <div class="text-muted text-sm animate-pulse">Rendering diagram...</div>

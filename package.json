@@ -5,21 +5,49 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "check": "npm run facts:check && npm run check:content && npm run typecheck",
+    "check:content": "node scripts/check-content.mjs",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "facts:check": "node scripts/sync-product-facts.mjs --check",
+    "facts:sync": "node scripts/sync-product-facts.mjs",
+    "generate": "nuxt generate && npm run verify:static",
+    "preview": "nuxt preview",
+    "preview:static": "node scripts/serve-static.mjs",
+    "test:e2e": "node scripts/test-e2e.mjs",
+    "typecheck": "nuxt typecheck",
+    "verify:static": "node scripts/verify-static.mjs"
+  },
+  "engines": {
+    "node": ">=24 <25"
   },
   "dependencies": {
+    "@iconify-json/lucide": "1.2.118",
     "@nuxt/content": "^3.15.0",
-    "@nuxt/image": "^2.0.0",
+    "@nuxt/image": "2.1.0",
     "@nuxt/ui": "^4.10.0",
-    "@nuxtjs/sitemap": "^8.3.0",
+    "@nuxtjs/sitemap": "8.3.4",
     "better-sqlite3": "^12.11.1",
-    "mermaid": "^11.16.0",
-    "nuxt": "^4.5.0",
+    "mermaid": "11.16.1",
+    "nuxt": "4.5.2",
     "nuxt-studio": "^1.7.0",
     "tailwindcss": "^4.3.3",
-    "vue": "^3.5.40",
+    "vue": "3.5.41",
     "vue-router": "^5.2.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "24.10.1",
+    "serve": "^14.2.6",
+    "typescript": "5.9.3",
+    "vue-tsc": "3.2.2",
+    "yaml": "2.9.0"
+  },
+  "overrides": {
+    "brace-expansion": ">=5.0.9",
+    "dompurify": ">=3.4.13",
+    "esbuild": ">=0.28.1",
+    "js-yaml": ">=4.3.1",
+    "sharp": ">=0.35.0"
   }
 }

@@ -1,178 +1,198 @@
 <script setup lang="ts">
 /**
- * Docs layout: custom header with section tabs,
- * filtered sidebar, search with content indexing, and color mode.
+ * Shared public-documentation shell.
+ *
+ * Navigation is sourced from Nuxt Content, while the page table of contents is
+ * queried by route so client-side navigation never reuses the previous page's
+ * headings.
  */
 const route = useRoute()
+const currentPath = computed(() => route.path)
+const mobileMenuOpen = ref(false)
+const menuButton = ref<HTMLButtonElement | null>(null)
 
-const { data: navigation } = await useAsyncData(
-  'docs-navigation',
-  () => queryCollectionNavigation('content'),
-)
-
-/**
- * Fetch all content search sections for the search modal.
- */
+const { data: navigation } = await useAsyncData('docs-navigation', () => queryCollectionNavigation('docs'))
 const { data: files } = await useAsyncData(
   'docs-search-sections',
-  () => queryCollectionSearchSections('content').catch(() => []),
+  () => queryCollectionSearchSections('docs').catch(() => []),
   { default: () => [] },
 )
+const { data: currentPage } = await useAsyncData(
+  () => `docs-layout-page:${currentPath.value}`,
+  () => queryCollection('docs').path(currentPath.value).first(),
+  { watch: [currentPath] },
+)
 
-/**
- * Root '/' belongs to the Getting Started section.
- */
 const activeSection = computed(() => {
-  const path = route.path
-  if (path === '/' || path === '' || path.startsWith('/getting-started')) return 'getting-started'
-  if (path.startsWith('/user-guide')) return 'user-guide'
-  if (path.startsWith('/developer-docs')) return 'developer-docs'
+  if (route.path.startsWith('/user-guide')) return 'user-guide'
   return 'getting-started'
 })
-
-const isWelcomePage = computed(() => route.path === '/' || route.path === '')
-
 const sections = [
   { label: 'Getting Started', to: '/getting-started/what-is-deflow', key: 'getting-started', icon: 'i-lucide-rocket' },
-  { label: 'User Guide', to: '/user-guide/trading/otc-deal-lifecycle', key: 'user-guide', icon: 'i-lucide-book-open' },
-  { label: 'Developer Guide', to: '/developer-docs', key: 'developer-docs', icon: 'i-lucide-code', badge: 'Soon', disabled: true },
+  { label: 'User Guide', to: '/user-guide/overview', key: 'user-guide', icon: 'i-lucide-book-open' },
+  // Deliberately render this product signal without a route until a supported
+  // public API or SDK exists. `aria-disabled` communicates the same boundary
+  // to assistive technology as the visual muted treatment.
+  { label: 'Developer Guide', key: 'developer-guide', icon: 'i-lucide-code-xml', badge: 'Coming soon', disabled: true },
 ]
+const userGuideOrder = [
+  '/user-guide/overview',
+  '/user-guide/trading',
+  '/user-guide/syndicates',
+  '/user-guide/rewards',
+  '/user-guide/security',
+  '/user-guide/partners',
+  '/user-guide/support',
+]
+const orderedNavigation = computed(() => (navigation.value || []).map((item) => {
+  if (item.path !== '/user-guide' || !item.children) return item
 
-/**
- * Filters navigation to only the active section's CHILDREN (no heading).
- */
-const filteredNavigation = computed(() => {
-  if (!navigation.value) return []
-  const pathMap: Record<string, string> = {
-    'getting-started': '/getting-started',
-    'user-guide': '/user-guide',
-    'developer-docs': '/developer-docs',
+  return {
+    ...item,
+    children: [...item.children].sort((left, right) => {
+      const leftIndex = userGuideOrder.indexOf(left.path)
+      const rightIndex = userGuideOrder.indexOf(right.path)
+      return (leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex)
+        - (rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex)
+    }),
   }
-  const prefix = pathMap[activeSection.value]
-  if (!prefix) return []
-  const section = navigation.value.find((item: any) => item.path === prefix)
-  return section?.children || []
+}))
+const filteredNavigation = computed(() => {
+  const prefix = `/${activeSection.value}`
+  return orderedNavigation.value.find(item => item.path === prefix)?.children || []
 })
 
-/**
- * Show Welcome link only in Getting Started section.
- */
-const showWelcomeLink = computed(() => activeSection.value === 'getting-started')
+/** Close the small-screen menu and optionally return focus to its trigger. */
+function closeMobileMenu(restoreFocus = false) {
+  mobileMenuOpen.value = false
+  if (restoreFocus) nextTick(() => menuButton.value?.focus())
+}
 
-/**
- * Mobile navigation menu toggle.
- */
-const mobileMenuOpen = ref(false)
+/** Provide the standard Escape interaction while the mobile menu is open. */
+function handleMenuKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape' && mobileMenuOpen.value) closeMobileMenu(true)
+}
+watch(() => route.path, () => closeMobileMenu())
+onMounted(() => document.addEventListener('keydown', handleMenuKeydown))
+onUnmounted(() => document.removeEventListener('keydown', handleMenuKeydown))
 </script>
 
 <template>
-  <!-- Custom header -->
-  <header class="sticky top-0 z-50 border-b border-(--ui-border) bg-(--ui-bg)/80 backdrop-blur-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center h-16 gap-4">
-        <!-- Mobile menu button -->
-        <button
-          class="md:hidden p-1.5 rounded-md text-(--ui-text-muted) hover:text-(--ui-text) hover:bg-(--ui-bg-elevated) transition-colors"
-          aria-label="Toggle menu"
-          @click="mobileMenuOpen = !mobileMenuOpen"
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="sticky top-0 z-50 border-b border-(--ui-border) bg-(--ui-bg)/90 backdrop-blur-lg">
+    <div class="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <button
+        ref="menuButton"
+        type="button"
+        class="rounded-md p-2 text-(--ui-text-muted) transition-colors hover:bg-(--ui-bg-elevated) hover:text-(--ui-text) lg:hidden"
+        :aria-label="mobileMenuOpen ? 'Close documentation navigation' : 'Open documentation navigation'"
+        aria-controls="mobile-navigation"
+        :aria-expanded="mobileMenuOpen"
+        @click="mobileMenuOpen = !mobileMenuOpen"
+      >
+        <UIcon :name="mobileMenuOpen ? 'i-lucide-x' : 'i-lucide-menu'" class="size-5" />
+      </button>
+
+      <NuxtLink to="/" class="flex shrink-0 items-center gap-2 rounded-sm" aria-label="DeFlow documentation home">
+        <UIcon name="i-lucide-hexagon" class="size-6 text-primary" />
+        <span class="text-lg font-bold text-(--ui-text)">DeFlow Docs</span>
+      </NuxtLink>
+
+      <nav class="ml-4 hidden items-center gap-1 lg:flex" aria-label="Documentation sections">
+        <template
+          v-for="section in sections"
+          :key="section.key"
         >
-          <UIcon :name="mobileMenuOpen ? 'i-lucide-x' : 'i-lucide-menu'" class="size-5" />
-        </button>
+          <span
+            v-if="section.disabled"
+            class="flex cursor-not-allowed items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-(--ui-text-dimmed)"
+            aria-disabled="true"
+            title="Developer Guide — coming soon"
+          >
+            <UIcon :name="section.icon" class="size-4" />
+            <span>{{ section.label }}</span>
+            <UBadge :label="section.badge" color="neutral" variant="subtle" size="xs" />
+          </span>
+          <NuxtLink
+            v-else
+            :to="section.to"
+            class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+            :class="activeSection === section.key ? 'bg-primary/10 text-primary' : 'text-(--ui-text-muted) hover:bg-(--ui-bg-elevated) hover:text-(--ui-text)'"
+          >
+            <UIcon :name="section.icon" class="size-4" />
+            <span>{{ section.label }}</span>
+          </NuxtLink>
+        </template>
+      </nav>
 
-        <!-- Logo + Title -->
-        <NuxtLink to="/" class="flex items-center gap-2 shrink-0">
-          <UIcon name="i-lucide-hexagon" class="size-6 text-primary" />
-          <span class="text-lg font-bold text-(--ui-text)">DeFlow Docs</span>
-        </NuxtLink>
+      <div class="flex-1" />
+      <UContentSearchButton :collapsed="false" class="hidden w-64 xl:flex" />
+      <UContentSearchButton :collapsed="true" class="xl:hidden" />
+      <UButton icon="i-lucide-globe" color="neutral" variant="ghost" to="https://deflowlabs.io" target="_blank" aria-label="Visit DeFlow Labs website" />
+      <UColorModeButton />
+    </div>
 
-        <!-- Section tabs (desktop) -->
-        <nav class="hidden md:flex items-center gap-1 ml-4">
-          <template v-for="section in sections" :key="section.key">
-            <span v-if="section.disabled"
-              class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md whitespace-nowrap opacity-40 cursor-not-allowed">
-              <UIcon :name="section.icon" class="size-4" />
-              {{ section.label }}
-              <UBadge v-if="section.badge" :label="section.badge" size="xs" color="neutral" variant="subtle" />
+    <div v-if="mobileMenuOpen" id="mobile-navigation" class="border-t border-(--ui-border) bg-(--ui-bg) lg:hidden">
+      <nav class="mx-auto max-h-[calc(100vh-7rem)] max-w-7xl overflow-y-auto px-4 py-4" aria-label="Mobile documentation navigation">
+        <div class="mb-4 grid gap-2">
+          <template
+            v-for="section in sections"
+            :key="section.key"
+          >
+            <span
+              v-if="section.disabled"
+              class="cursor-not-allowed rounded-md bg-(--ui-bg-elevated) px-3 py-2 text-sm font-medium text-(--ui-text-dimmed)"
+              aria-disabled="true"
+              title="Developer Guide — coming soon"
+            >
+              {{ section.label }} <span class="ml-1 text-xs">({{ section.badge }})</span>
             </span>
-            <NuxtLink v-else :to="section.to"
-              class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap"
-              :class="[
-                activeSection === section.key
-                  ? 'text-primary bg-primary/10'
-                  : 'text-(--ui-text-muted) hover:text-(--ui-text) hover:bg-(--ui-bg-elevated)',
-              ]">
-              <UIcon :name="section.icon" class="size-4" />
+            <NuxtLink
+              v-else
+              :to="section.to"
+              class="rounded-md px-3 py-2 text-sm font-medium"
+              :class="activeSection === section.key ? 'bg-primary/10 text-primary' : 'bg-(--ui-bg-elevated) text-(--ui-text-muted)'"
+            >
               {{ section.label }}
             </NuxtLink>
           </template>
-        </nav>
-
-        <!-- Spacer -->
-        <div class="flex-1" />
-
-        <!-- Inline search (full on desktop, collapsed icon on mobile) -->
-        <UContentSearchButton :collapsed="false" class="hidden sm:flex w-48 lg:w-64" />
-        <UContentSearchButton :collapsed="true" class="sm:hidden" />
-
-        <!-- Right: GitHub + Color mode -->
-        <div class="flex items-center gap-1 shrink-0">
-          <UButton icon="i-lucide-github" color="neutral" variant="ghost" to="https://github.com/DeFlowLabs"
-            target="_blank" aria-label="GitHub" />
-          <UColorModeButton />
         </div>
-      </div>
-    </div>
-
-    <!-- Mobile dropdown menu -->
-    <div v-if="mobileMenuOpen" class="md:hidden border-t border-(--ui-border) bg-(--ui-bg)">
-      <nav class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
-        <template v-for="section in sections" :key="section.key">
-          <span v-if="section.disabled"
-            class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md opacity-40 cursor-not-allowed">
-            <UIcon :name="section.icon" class="size-4" />
-            {{ section.label }}
-            <UBadge v-if="section.badge" :label="section.badge" size="xs" color="neutral" variant="subtle" />
-          </span>
-          <NuxtLink v-else :to="section.to"
-            class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors"
-            :class="[
-              activeSection === section.key
-                ? 'text-primary bg-primary/10'
-                : 'text-(--ui-text-muted) hover:text-(--ui-text) hover:bg-(--ui-bg-elevated)',
-            ]"
-            @click="mobileMenuOpen = false">
-            <UIcon :name="section.icon" class="size-4" />
-            {{ section.label }}
-          </NuxtLink>
-        </template>
+        <UContentNavigation :navigation="orderedNavigation" highlight />
       </nav>
     </div>
   </header>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <UPage>
       <template #left>
         <UPageAside>
-          <!-- Welcome link — only in Getting Started section -->
-          <NuxtLink v-if="showWelcomeLink" to="/"
-            class="flex items-center gap-2 pr-2.5 py-1.5 mb-4 pb-4 text-sm rounded-md transition-colors border-b border-(--ui-border)"
-            :class="[
-              isWelcomePage
-                ? 'text-primary font-medium'
-                : 'text-(--ui-text-muted) hover:text-(--ui-text)',
-            ]">
-            Welcome to DeFlow
-          </NuxtLink>
-
-          <!-- Section child pages (all expanded by default when defaultOpen is undefined) -->
+          <NuxtLink v-if="activeSection === 'getting-started'" to="/" class="mb-4 block border-b border-(--ui-border) pb-4 text-sm font-medium text-(--ui-text-muted) hover:text-primary">Welcome to DeFlow</NuxtLink>
           <UContentNavigation :navigation="filteredNavigation" highlight />
         </UPageAside>
       </template>
-
-      <slot />
+      <main id="main-content" tabindex="-1"><slot /></main>
+      <template #right>
+        <aside
+          v-if="currentPage?.body?.toc?.links?.length"
+          :key="currentPath"
+          data-testid="page-toc"
+          aria-label="Page table of contents"
+        >
+          <UContentToc
+            :links="currentPage.body.toc.links"
+            title="On this page"
+            highlight
+          />
+        </aside>
+      </template>
     </UPage>
   </div>
 
-
-  <UContentSearch :navigation="navigation" :files="files" :color-mode="false" />
+  <UContentSearch
+    :navigation="orderedNavigation"
+    :files="files"
+    :color-mode="false"
+    title="Search DeFlow documentation"
+    description="Search DeFlow product guidance, availability, workflows, fees, security, and support."
+  />
 </template>

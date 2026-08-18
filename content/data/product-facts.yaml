@@ -1,0 +1,508 @@
+# Generated from ../core/docs/PRODUCT_FACTS.yaml. Do not edit manually.
+schemaVersion: 1
+product: DeFlow
+owner: DeFlow Labs
+lastVerified: 2026-08-18
+classification: public-safe
+sourcePrecedence:
+  - runtime-code-and-deployment-manifests
+  - latest-dated-operational-legal-and-audit-records
+  - product-plans-and-roadmaps
+factRecords:
+  - paths:
+      - release.stage
+      - release.productionReady
+      - release.mainnetLive
+    owner: Product and Engineering
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - docs/BETA_TESTING_PLAN.md
+      - packages/contracts/deployments/11155111.json
+  - paths:
+      - network.name
+      - network.chainId
+      - network.settlementAsset
+      - network.gasAsset
+    owner: Smart Contracts
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - packages/contracts/deployments/11155111.json
+  - paths:
+      - features
+    owner: Product
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - apps/api/src/app.module.ts
+      - apps/api/src/modules/syndicates/syndicates.service.ts
+      - apps/api/src/modules/syndicates/allocations.service.ts
+      - apps/web/app/pages/syndicates/new.vue
+      - apps/web/app/pages/syndicates/[id].vue
+      - apps/web/app/composables/usePermissions.ts
+      - apps/web/app/pages/onboarding.vue
+      - docs/BETA_TESTING_PLAN.md
+      - docs/IMPLEMENTATION_STATUS.md
+      - https://github.com/deflowlabs/core/issues
+  - paths:
+      - fees.commercialSchedule
+    owner: Finance and Product
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - packages/db/seed-fee-schedules.ts
+  - paths:
+      - fees.sepoliaDeploymentGlobalFeeBps
+    owner: Smart Contracts
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - packages/contracts/deployments/11155111.json
+  - paths:
+      - vip
+    owner: Product and Engineering
+    lastVerified: 2026-08-18
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - packages/common/src/constants/vip.ts
+      - docs/BUSINESS_PLAN.md
+  - paths:
+      - contracts.escrow
+      - contracts.escrowFactory
+      - contracts.feeRouter
+      - contracts.referralVault
+    owner: Smart Contracts
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - packages/contracts/src/Escrow.sol
+      - packages/contracts/src/EscrowFactory.sol
+      - packages/contracts/src/FeeRouter.sol
+      - packages/contracts/deployments/11155111.json
+  - paths:
+      - contracts.governance
+    owner: Security and Smart Contracts
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - packages/contracts/src/Escrow.sol
+      - packages/contracts/deployments/11155111.json
+  - paths:
+      - assurance.externalContractAudit
+    owner: Security
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - docs/CONTRACT_AUDIT_PREP.md
+  - paths:
+      - assurance.legalReview
+      - assurance.terminology.nonCustodial
+    owner: Legal and Compliance
+    lastVerified: 2026-08-17
+    classification: public-safe
+    sourceRevision: b845594313ac728475ff7d213b844768c0ca4dda
+    sourceRefs:
+      - docs/LEGAL_REVIEW_CHECKLIST.md
+release:
+  stage: private-beta
+  publicLabel: Private beta
+  productionReady: false
+  mainnetLive: false
+  notice: Testnet-only. No real assets or production settlement.
+network:
+  name: Ethereum Sepolia
+  chainId: 11155111
+  settlementAsset:
+    name: Test USDC
+    symbol: TestUSDC
+    address: "0x0F5D9F6546aa791De4B9543d57f8C19b668Eb10E"
+    hasMonetaryValue: false
+  gasAsset:
+    name: Sepolia ETH
+    hasMonetaryValue: false
+features:
+  - id: account-and-identity
+    label: Account and identity verification
+    availability: private-beta
+    note: Third-party verification runs in sandbox mode.
+  - id: otc-settlement
+    label: Bilateral OTC settlement
+    availability: private-beta
+    note: Uses Sepolia contracts and test assets.
+  - id: syndicates
+    label: Syndicate raises
+    availability: private-beta
+    note: Invited validation flow; implemented with FIFO allocation and one Sepolia escrow per approved investor. End-to-end
+      validation is pending.
+  - id: desks
+    label: Team desks and invitations
+    availability: private-beta
+    note: Default desks, members, roles, invitations and activity records are implemented for beta coordination.
+  - id: dashboard
+    label: Dashboard and deal analytics
+    availability: limited-beta
+    note: Beta deal, volume and activity summaries are available; some telemetry remains simplified and is not a financial
+      statement.
+  - id: vip-and-referrals
+    label: VIP progression and referrals
+    availability: private-beta
+    note: Cash withdrawal flows use TestUSDC.
+  - id: partner-programme
+    label: Partner programme
+    availability: limited-beta
+    note: Access and benefits are subject to onboarding and product readiness.
+  - id: syndicate-pro-rata
+    label: Pro-rata syndicate allocation
+    availability: planned
+    note: The beta uses FIFO; proportional oversubscription is not implemented.
+  - id: syndicate-pooled-escrow
+    label: Pooled syndicate escrow
+    availability: planned
+    note: The beta deploys one escrow per approved allocation; the pooled contract and on-chain SyndicateController are not
+      implemented.
+  - id: institutional-kyb
+    label: Institutional KYB tiers
+    availability: planned
+    note: Individual sandbox verification is available; L2/L3 institutional onboarding is not launched.
+  - id: asset-management
+    label: Portfolio and risk analytics
+    availability: planned
+    note: Read-only analytics are roadmap functionality.
+  - id: public-api
+    label: Public API and SDK
+    availability: planned
+    note: No supported public developer interface is published.
+fees:
+  currency: USD
+  commercialSchedule:
+    minimumEffectiveRatePercent: 0.1
+    tiers:
+      - rank: 1
+        upperBoundExclusiveUsd: 100000
+        ratePercent: 1.5
+      - rank: 2
+        upperBoundExclusiveUsd: 500000
+        ratePercent: 1
+      - rank: 3
+        upperBoundExclusiveUsd: 1000000
+        ratePercent: 0.8
+      - rank: 4
+        upperBoundExclusiveUsd: 5000000
+        ratePercent: 0.55
+      - rank: 5
+        upperBoundExclusiveUsd: 25000000
+        ratePercent: 0.4
+      - rank: 6
+        upperBoundExclusiveUsd: 100000000
+        ratePercent: 0.3
+      - rank: 7
+        upperBoundExclusiveUsd: 500000000
+        ratePercent: 0.25
+      - rank: 8
+        upperBoundExclusiveUsd: 1000000000
+        ratePercent: 0.2
+      - rank: 9
+        upperBoundExclusiveUsd: null
+        ratePercent: 0.15
+  sepoliaDeploymentGlobalFeeBps: 100
+  note: The commercial schedule and the deployed Sepolia global fee are distinct facts.
+vip:
+  basis: lifetime-settled-volume-usd
+  economicControlsAvailability: private-beta
+  benefitCatalogueStatus: approved-product-design
+  benefitAvailabilityRule: A named benefit is not operational merely because it is assigned to a rank. Check the feature
+    availability matrix and the VIP Perk Engine roadmap item before promising access.
+  benefitAvailabilityByRank:
+    "1": private-beta
+    "2": limited-beta
+    "3": planned
+    "4": planned
+    "5": planned
+    "6": planned
+    "7": planned
+    "8": planned
+    "9": planned
+    "10": planned
+    "11": planned
+    "12": private-beta
+    "13": planned
+    "14": planned
+    "15": planned
+    "16": limited-beta
+    "17": limited-beta
+    "18": planned
+    "19": planned
+  ranks:
+    - rank: 1
+      label: Bronze I
+      thresholdUsd: 0
+      feeDiscountPercent: 0
+      maxActiveDeals: 3
+      referralCommissionPercent: 5
+      creditSplitPercent: 80
+      cashSplitPercent: 20
+      monthlyReferralCapUsd: 1000
+      benefit: Standard Referrals
+    - rank: 2
+      label: Bronze II
+      thresholdUsd: 25000
+      feeDiscountPercent: 0
+      maxActiveDeals: 3
+      referralCommissionPercent: 5
+      creditSplitPercent: 80
+      cashSplitPercent: 20
+      monthlyReferralCapUsd: 1000
+      benefit: Deal Analytics
+    - rank: 3
+      label: Bronze III
+      thresholdUsd: 75000
+      feeDiscountPercent: 0
+      maxActiveDeals: 3
+      referralCommissionPercent: 5
+      creditSplitPercent: 80
+      cashSplitPercent: 20
+      monthlyReferralCapUsd: 1000
+      benefit: Priority Support
+    - rank: 4
+      label: Silver I
+      thresholdUsd: 150000
+      feeDiscountPercent: 2.5
+      maxActiveDeals: 10
+      referralCommissionPercent: 5
+      creditSplitPercent: 70
+      cashSplitPercent: 30
+      monthlyReferralCapUsd: 5000
+      benefit: Two-Sided Referrals
+    - rank: 5
+      label: Silver II
+      thresholdUsd: 350000
+      feeDiscountPercent: 2.5
+      maxActiveDeals: 10
+      referralCommissionPercent: 5
+      creditSplitPercent: 70
+      cashSplitPercent: 30
+      monthlyReferralCapUsd: 5000
+      benefit: Verified Trader Badge
+    - rank: 6
+      label: Silver III
+      thresholdUsd: 750000
+      feeDiscountPercent: 2.5
+      maxActiveDeals: 10
+      referralCommissionPercent: 5
+      creditSplitPercent: 70
+      cashSplitPercent: 30
+      monthlyReferralCapUsd: 5000
+      benefit: Smart Desk Branding
+    - rank: 7
+      label: Gold I
+      thresholdUsd: 1000000
+      feeDiscountPercent: 5
+      maxActiveDeals: 25
+      referralCommissionPercent: 5
+      creditSplitPercent: 60
+      cashSplitPercent: 40
+      monthlyReferralCapUsd: 25000
+      benefit: Pulse Analytics
+    - rank: 8
+      label: Gold II
+      thresholdUsd: 3000000
+      feeDiscountPercent: 5
+      maxActiveDeals: 25
+      referralCommissionPercent: 5
+      creditSplitPercent: 60
+      cashSplitPercent: 40
+      monthlyReferralCapUsd: 25000
+      benefit: Blueprints
+    - rank: 9
+      label: Gold III
+      thresholdUsd: 7000000
+      feeDiscountPercent: 5
+      maxActiveDeals: 25
+      referralCommissionPercent: 5
+      creditSplitPercent: 60
+      cashSplitPercent: 40
+      monthlyReferralCapUsd: 25000
+      benefit: Forge API Read
+    - rank: 10
+      label: Platinum I
+      thresholdUsd: 10000000
+      feeDiscountPercent: 7.5
+      maxActiveDeals: 50
+      referralCommissionPercent: 5
+      creditSplitPercent: 50
+      cashSplitPercent: 50
+      monthlyReferralCapUsd: 100000
+      benefit: Forge API Execute
+    - rank: 11
+      label: Platinum II
+      thresholdUsd: 30000000
+      feeDiscountPercent: 7.5
+      maxActiveDeals: 50
+      referralCommissionPercent: 5
+      creditSplitPercent: 50
+      cashSplitPercent: 50
+      monthlyReferralCapUsd: 100000
+      benefit: Dedicated Channel
+    - rank: 12
+      label: Platinum III
+      thresholdUsd: 70000000
+      feeDiscountPercent: 7.5
+      maxActiveDeals: 50
+      referralCommissionPercent: 10
+      creditSplitPercent: 50
+      cashSplitPercent: 50
+      monthlyReferralCapUsd: 100000
+      benefit: Master Rev-Share
+    - rank: 13
+      label: Diamond I
+      thresholdUsd: 100000000
+      feeDiscountPercent: 10
+      maxActiveDeals: 100
+      referralCommissionPercent: 10
+      creditSplitPercent: 40
+      cashSplitPercent: 60
+      monthlyReferralCapUsd: 500000
+      benefit: Account Manager
+    - rank: 14
+      label: Diamond II
+      thresholdUsd: 250000000
+      feeDiscountPercent: 10
+      maxActiveDeals: 100
+      referralCommissionPercent: 10
+      creditSplitPercent: 40
+      cashSplitPercent: 60
+      monthlyReferralCapUsd: 500000
+      benefit: Horizon Spotlight
+    - rank: 15
+      label: Diamond III
+      thresholdUsd: 500000000
+      feeDiscountPercent: 10
+      maxActiveDeals: 100
+      referralCommissionPercent: 10
+      creditSplitPercent: 40
+      cashSplitPercent: 60
+      monthlyReferralCapUsd: 500000
+      benefit: VIP Access Pass
+    - rank: 16
+      label: Obsidian I
+      thresholdUsd: 600000000
+      feeDiscountPercent: 10
+      maxActiveDeals: unlimited
+      referralCommissionPercent: 10
+      creditSplitPercent: 40
+      cashSplitPercent: 60
+      monthlyReferralCapUsd: 500000
+      benefit: Custom Fee Schedule
+    - rank: 17
+      label: Obsidian II
+      thresholdUsd: 750000000
+      feeDiscountPercent: 10
+      maxActiveDeals: unlimited
+      referralCommissionPercent: 10
+      creditSplitPercent: 40
+      cashSplitPercent: 60
+      monthlyReferralCapUsd: 500000
+      benefit: Early Access Programme
+    - rank: 18
+      label: Obsidian III
+      thresholdUsd: 900000000
+      feeDiscountPercent: 10
+      maxActiveDeals: unlimited
+      referralCommissionPercent: 10
+      creditSplitPercent: 40
+      cashSplitPercent: 60
+      monthlyReferralCapUsd: 500000
+      benefit: White-Label Fast Track
+    - rank: 19
+      label: Sovereign
+      thresholdUsd: 1000000000
+      feeDiscountPercent: 10
+      maxActiveDeals: unlimited
+      referralCommissionPercent: 10
+      creditSplitPercent: 40
+      cashSplitPercent: 60
+      monthlyReferralCapUsd: 500000
+      benefit: Genesis Partner
+  benefitDescriptions:
+    Standard Referrals: Earn 5% of platform fees from eligible invitees through the dual-bucket reward model.
+    Deal Analytics: Personal deal-history dashboard with performance metrics and volume charts.
+    Priority Support: Prioritised support handling for Bronze III and above.
+    Two-Sided Referrals: Invitees receive a 10% discount on their first eligible trade.
+    Verified Trader Badge: Verified status displayed with the user's platform profile.
+    Smart Desk Branding: Desk logo, brand colours and vanity URL customisation.
+    Pulse Analytics: Aggregated platform trends, volume heatmaps and market indicators.
+    Blueprints: Reusable deal configurations for assets, amounts and terms.
+    Forge API Read: API keys for exporting authorised deal, balance and analytics data.
+    Forge API Execute: Programmatic creation, acceptance and management of authorised deals.
+    Dedicated Channel: Direct private support channel with the DeFlow team.
+    Master Rev-Share: Referral commission increases from 5% to 10%.
+    Account Manager: Named contact for onboarding, integrations and account guidance.
+    Horizon Spotlight: Priority visibility for eligible public marketplace deals.
+    VIP Access Pass: Invitations to eligible DeFlow events and roundtables.
+    Custom Fee Schedule: Eligibility to negotiate a desk-specific fee schedule.
+    Early Access Programme: Prioritised access to selected prerelease features and feedback programmes.
+    White-Label Fast Track: Priority white-label application with the setup fee waived; recurring and royalty fees remain applicable.
+    Genesis Partner: Proposed co-marketing, case-study and strategic-advisory package; any governance or token element
+      requires separate legal and governance approval.
+contracts:
+  escrow:
+    deployment: full-instance-create2
+    upgradeable: false
+    governanceCapabilities:
+      - settle-funded-deal
+      - resolve-dispute-by-split
+      - refund-through-fallback
+      - seize-and-reroute-to-quarantine
+  escrowFactory:
+    address: "0xAB4831D50F2484210e21E58F5371E730D3328B5C"
+    upgradeable: false
+    governanceCapabilities:
+      - pause-and-unpause-new-deployments
+      - maintain-token-allowlist
+      - update-fee-router
+  feeRouter:
+    implementationAddress: "0x94e8F53EEcd2587E7DEcD12F94552bEbAbfE04C7"
+    proxyAddress: "0x99EFF65bEEff30F23908d3361F04CC010AB8823F"
+    upgradeability: uups
+  referralVault:
+    address: "0xF1B15aE8520e0B30C07d155d931f99F744B5FF58"
+    upgradeable: false
+  governance:
+    address: "0xd4167a0e295F3F41d701AE9D5b1A33660685ADc2"
+    control: single-eoa
+    multisig: false
+    timelock: false
+assurance:
+  externalContractAudit:
+    status: not-engaged
+    publicClaimAllowed: false
+    source: CONTRACT_AUDIT_PREP.md
+  legalReview:
+    status: awaiting-counsel
+    publicComplianceClaimAllowed: false
+    source: LEGAL_REVIEW_CHECKLIST.md
+  terminology:
+    nonCustodial:
+      status: pending-legal-review
+      requiredQualification: Smart contracts hold assets and governance has documented emergency and dispute powers.
+sources:
+  vip: packages/common/src/constants/vip.ts
+  fees: packages/db/seed-fee-schedules.ts
+  escrow: packages/contracts/src/Escrow.sol
+  escrowFactory: packages/contracts/src/EscrowFactory.sol
+  feeRouter: packages/contracts/src/FeeRouter.sol
+  deployment: packages/contracts/deployments/11155111.json
+  betaBehaviour: docs/BETA_TESTING_PLAN.md
+  audit: docs/CONTRACT_AUDIT_PREP.md
+  legal: docs/LEGAL_REVIEW_CHECKLIST.md
+  syndicates: apps/api/src/modules/syndicates
