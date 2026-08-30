@@ -118,7 +118,7 @@ Never edit `content/data/product-facts.yaml` directly. The sync deliberately exc
 4. In `/docs`, run `npm run facts:sync && npm run check`.
 5. Review rendered availability, fees, VIP, network and assurance components.
 
-Runtime/deployment evidence determines availability. GitHub issues determine delivery tracking. A closed issue does not automatically approve a public claim. CI checks out `deflowlabs/core` beside this repository; provide read-only `CORE_REPOSITORY_TOKEN` if core is private.
+Runtime/deployment evidence determines availability. GitHub issues determine delivery tracking. A closed issue does not automatically approve a public claim. CI checks out the `stage` revision of `deflowlabs/core` beside this repository through the organisation's short-lived GitHub App token and records the exact source SHA in the run summary.
 
 ## Content components
 
@@ -184,9 +184,17 @@ Use callback `https://<authoring-host>/__nuxt_studio/auth/github`. Protect `cont
 
 ## GitHub Actions
 
-`.github/workflows/quality.yml` runs on every pull request and push to `master` with Node 24. It checks out the canonical `core` facts beside this repository, installs from the lockfile, validates facts/content/types, generates and inspects every static route, runs responsive Playwright and axe coverage, audits production dependencies, and publishes a readable run summary.
+`.github/workflows/quality.yml` runs on every pull request and push to `master` with Node 24. Its stable required check is `Docs / Required`. It checks out and records the canonical `core` revision, validates facts/content/types, generates and inspects every static route, runs responsive Playwright and axe coverage, audits production dependencies, runs actionlint/zizmor/Semgrep/Trivy, and retains browser, SBOM and security evidence.
 
-The `docs-playwright-*` artifact contains a navigable `playwright-report/index.html` plus retry evidence for 14 days. If `deflowlabs/core` is private, configure the repository secret `CORE_REPOSITORY_TOKEN` as a read-only fine-grained token for that repository; no token is required when the Actions token can read it. Dependabot reviews npm and GitHub Actions updates weekly. Action dependencies are pinned to immutable SHAs and obsolete runs are cancelled.
+The `docs-playwright-*` artifact contains a navigable `playwright-report/index.html` plus retry evidence for 30 days; the security artifact and CycloneDX SBOM are retained for 90 days.
+
+| GitHub setting | Purpose |
+|---|---|
+| Variable `DEFLOW_CI_APP_ID` | Organisation GitHub App ID |
+| Secret `DEFLOW_CI_APP_PRIVATE_KEY` | GitHub App private key; short-lived tokens are minted per run |
+| Team `@deflowlabs/engineering` | Code owner configured by `.github/CODEOWNERS` |
+
+Grant the App read-only Contents access to `deflowlabs/core`; do not use a personal access token. Protect `master`, require code-owner review, conversation resolution and `Docs / Required`, and prevent force pushes. Repository workflow permissions can remain read-only, and **Allow GitHub Actions to create and approve pull requests** should be disabled because no Docs workflow creates a pull request. Dependabot surfaces all update levels for review, including majors; no major is silently hidden.
 
 ## Vercel deployment
 
