@@ -198,6 +198,8 @@ Grant the App read-only Contents access to `deflowlabs/core`; do not use a perso
 
 The v3 token action prefers the App client ID and temporarily falls back to the legacy App ID so the migration does not interrupt CI. Add `DEFLOW_CI_APP_CLIENT_ID`, confirm a successful default-branch run uses the client-ID step, then remove `DEFLOW_CI_APP_ID`; the fallback and its deprecation warning can be removed in the same reviewed cleanup. Dependabot checks run on Mondays at 06:00 Europe/Lisbon. npm uses 3-, 7- and 30-day patch/minor/major cooldowns, while Actions use GitHub's supported seven-day default cooldown; security updates are not delayed. After `Documentation Quality` succeeds, `dependabot-queue.yml` enables native squash auto-merge, but one maintainer approval and all protected-branch requirements remain mandatory.
 
+Review and triage dependency pull requests using the canonical [Dependabot Pull Request SOP](https://github.com/deflowlabs/core/blob/stage/docs/DEPENDABOT_SOP.md).
+
 ## Vercel deployment
 
 `vercel.json` is authoritative.
