@@ -196,7 +196,7 @@ The `docs-playwright-*` artifact contains a navigable `playwright-report/index.h
 
 Grant the App read-only Contents access to `deflowlabs/core`; do not use a personal access token. Protect `master`, require code-owner review, conversation resolution and `Docs / Required`, and prevent force pushes. Repository workflow permissions can remain read-only, and **Allow GitHub Actions to create and approve pull requests** should be disabled because no Docs workflow creates a pull request. Dependabot surfaces all update levels for review, including majors; no major is silently hidden.
 
-The v3 token action consumes the App client ID. Keep the legacy `DEFLOW_CI_APP_ID` variable only until the first successful default-branch run using `DEFLOW_CI_APP_CLIENT_ID`, then remove it. Dependabot checks run on Mondays at 06:00 Europe/Lisbon with 3-, 7- and 30-day patch/minor/major cooldowns; security updates are not delayed. After `Documentation Quality` succeeds, `dependabot-queue.yml` enables native squash auto-merge, but one maintainer approval and all protected-branch requirements remain mandatory.
+The v3 token action consumes the App client ID. Keep the legacy `DEFLOW_CI_APP_ID` variable only until the first successful default-branch run using `DEFLOW_CI_APP_CLIENT_ID`, then remove it. Dependabot checks run on Mondays at 06:00 Europe/Lisbon. npm uses 3-, 7- and 30-day patch/minor/major cooldowns, while Actions use GitHub's supported seven-day default cooldown; security updates are not delayed. After `Documentation Quality` succeeds, `dependabot-queue.yml` enables native squash auto-merge, but one maintainer approval and all protected-branch requirements remain mandatory.
 
 ## Vercel deployment
 
