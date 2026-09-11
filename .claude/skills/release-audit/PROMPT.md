@@ -54,7 +54,7 @@ Give every item of the previous pack a disposition in `reconciliation.json` and 
 
 ## 6. Method
 
-Work in phases and checkpoint each in `audit/PROGRESS.md`: preflight → baseline → reconciliation → inventory and coverage → lanes A–I → reconciliation of lanes → safe fixes → pack → GitHub writes → verification → handoff. Fan lanes out to sub-agents with a written brief; keep severity calibration and the decision with the lead agent.
+Work in phases and checkpoint each in `audit/PROGRESS.md`: preflight → baseline → reconciliation → inventory and coverage → lanes A–L → reconciliation of lanes → safe fixes → pack → GitHub writes → verification → handoff. Fan lanes out to sub-agents with a written brief; keep severity calibration and the decision with the lead agent.
 
 Derive every inventory from source: pages, their front matter, components, navigation, redirects, search index, sitemap, diagrams, scripts, workflows, tests. Maintain `coverage.csv` (page or surface, importance, method, depth, evidence, result, untested remainder). Run what the repository provides — read `package.json` rather than trusting a list — and record expected versus observed for each command in `checks/`. Attack every content check with a page designed to pass it while violating its intent, for example a claim phrased to avoid the checker's patterns. Read the published site as well as the source: a page that builds is not a page that renders correctly, is found by search, or is understood. Close each lane with what its method could not see.
 
@@ -81,13 +81,13 @@ Build `inventory.json` covering: every page with its route, front matter, audien
 
 ## 9. Review lanes
 
-Every lane answers: what is true today, with evidence; what must change before the gate assessed, with the smallest effective remedy; what should be removed, merged or simplified.
+Every lane answers: what is true today, with evidence; what must change before the gate assessed, with the smallest effective remedy; what should be removed, merged or simplified; and what would make it materially better. Lanes E to K are the dimensions every DeFlow Labs repository is audited on; lanes A to D are this repository's own, and they come first because they are why it exists.
 
 ### A. Information architecture and onboarding
 The heart of this audit. Map the site as readers meet it, per audience: what each needs to learn, in what order, and where they end up. Classify every page by Diátaxis type and flag pages that mix types. Record every loop, dead end, gap, duplicated explanation and page that exists for the site rather than the reader. Walk each audience's onboarding path in order and measure reading time and steps to their goal: a user to a first safe action; a partner or integrator to understanding how DeFlow fits their workflow; a risk reviewer to the product's posture, controls and evidence in ten minutes. Propose the target structure: sections, page merges and splits, deletions, redirects for every changed URL, and the navigation that ties them together.
 
 ### B. Visuals and layout
-For every concept better seen than read — the product model, deal and syndicate lifecycles, roles and permissions, the settlement flow, security controls, availability at a glance, comparisons — say whether the site shows it, and propose the visual: diagram, table, callout, step list or annotated screenshot, where it goes, its source format (Mermaid or another text format in the repository), and what triggers its update. Review layout consistency: page templates, heading structure, callouts, tables, code blocks, and the reading experience on mobile.
+For every concept better seen than read — the product model, deal and syndicate lifecycles, roles and permissions, the settlement flow, security controls, availability at a glance, comparisons — say whether the site shows it, and propose the visual: diagram, table, callout, step list or annotated screenshot, where it goes, its source format (Mermaid or another text format in the repository), and what triggers its update. Review layout consistency: page templates, heading structure, callouts, tables and code blocks.
 
 ### C. Content quality
 Judge every page against the rubric and record the result per page:
@@ -104,23 +104,32 @@ Judge every page against the rubric and record the result per page:
 | Accessible | Ordered headings, descriptive links, text alternatives for every diagram |
 | Claim-safe | No claim the ledger does not support |
 
-### D. Facts and claims
+### D. Editorial style and approach
+Voice and tone for each audience, and whether the site sounds like one company; plain language and readability, with sentence length, jargon and a readability measure recorded per page; terminology against one glossary shared with the product and the website, with every term defined where it first matters; procedures written as tasks, each with prerequisites, steps, the expected result and what to do when it fails; examples and screenshots that are current, useful and consistent; adherence to the page contract and the editorial standard in the README. Then the approach itself: whether the site teaches, guides, informs and explains in the right proportion for each audience, whether it answers the questions support actually receives, and how readers give feedback and how that feedback reaches a page. Propose the style guide the site should follow, as a short section of the README rather than a new document.
+
+### E. Facts and claims
 Probes 1 to 3; the page contract enforced by `check:content` against what it actually enforces; availability labels against the ledger.
 
-### E. Accessibility, SEO and performance
-WCAG 2.2 AA with automated and manual checks on the rendered site, including diagrams and tables; metadata, Open Graph, canonical URLs, sitemap, robots, structured data; static output size and load performance.
+### F. UI/UX and responsiveness of the site
+Navigation, the search experience (relevance, and what readers get for common and zero-result queries), table of contents, breadcrumbs, previous and next links, colour modes, code blocks and wide tables on small screens, and print. Responsive behaviour on a small phone, a large phone, a tablet, a laptop and a wide desktop, with a screenshot per breakpoint in `checks/`.
 
-### F. Brand and consistency with the product and the website
+### G. Accessibility
+WCAG 2.2 AA on the rendered site: automated checks on every page, plus keyboard-only navigation, focus visibility, a screen-reader walk-through (NVDA or VoiceOver), contrast in every colour mode, zoom and reflow, reduced motion, and text alternatives for every diagram, table and screenshot.
+
+### H. Performance, SEO, scalability and reliability
+Static output size and load performance, Core Web Vitals on real pages, metadata, Open Graph, canonical URLs, sitemap, robots and structured data; build time and search-index size as content grows; Vercel limits; uptime monitoring and who is alerted.
+
+### I. Brand, terminology and consistency
 Name, terminology, tone, visual language and design tokens against the product and the website; hand-offs between the three (links, sign-up and support paths).
 
-### G. Architecture and code
+### J. Architecture and code
 Nuxt Content configuration, collections and schemas, components that render facts, the static build and its verification, dead code, dependencies, reproducible builds.
 
-### H. Delivery, security and GitHub configuration
-Each workflow (triggers, permissions, the App credential used to read Core, concurrency, timeouts, failure semantics, artifacts, owner, minutes); Dependabot; rulesets and merge settings; Vercel production and preview configuration; headers and CSP; the optional Nuxt Studio project's exposure. Probes 4 to 8.
+### K. Delivery, security, integrations and GitHub configuration
+Each workflow (triggers, permissions, the App credential used to read Core, concurrency, timeouts, failure semantics, artifacts, owner, minutes); Dependabot; rulesets and merge settings; Vercel production and preview configuration; headers and CSP; the optional Nuxt Studio project's exposure; one matrix of every external service the site uses. Probes 4 to 8.
 
-### I. This repository's own documentation
-The README as an operating manual for engineers and editors: correct, complete, concise; the onboarding path for a new contributor to a first published change, measured.
+### L. This repository's own documentation and improvements
+The README as an operating manual for engineers and editors: correct, complete, concise; the onboarding path for a new contributor to a first published change, measured. Then a ranked list of improvements beyond defects — new guides readers need, interactive elements, search, versioning, localisation, feedback — each with the need it serves, value, effort, risk and the smallest experiment.
 
 ## 10. Decision
 
@@ -143,8 +152,10 @@ Register every finding in `findings.json` and render `03-findings.md`. Each carr
 - `02-reconciliation.md`, `reconciliation.json`.
 - `03-findings.md`, `findings.json`, `evidence-ledger.json`, `checks/`.
 - `04-information-architecture.md` — lanes A and B: the map, onboarding journeys measured, the target structure, the visuals plan and the redirect list.
-- `05-content-and-claims.md` — lanes C and D, with the rubric result per page.
-- `06-experience-and-delivery.md` — lanes E to I.
+- `05-content-style-and-claims.md` — lanes C, D and E, with the rubric result per page and the proposed style guide.
+- `06-experience.md` — lanes F, G and I, with the screenshots per breakpoint.
+- `07-performance-and-delivery.md` — lanes H, J and K.
+- `08-improvements.md` — lane L.
 - `docs-inventory.json` — for the Core audit: every page and document with path or URL, audience, Diátaxis type, owner, last verified date, word count, and the facts it overlaps with other documents.
 - `claims.json` — for the Core audit: every claim with its page, exact wording, the ledger fact it depends on, and pass or fail.
 - `PROGRESS.md` — phase ledger and handoff.
